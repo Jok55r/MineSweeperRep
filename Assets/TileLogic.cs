@@ -13,12 +13,13 @@ public class TileLogic : MonoBehaviour
     public bool mine = false;
     public State state = State.none;
     public TextMeshPro textMeshPro;
-    /*public int x;
-    public int y;*/
+    public int x;
+    public int y;
 
     private void Start()
     {
-        SetColor(Color.grey, gameObject);
+        float rnd = Random.Range(0.49f, 0.51f);
+        SetColor(new Color(rnd, rnd, rnd), gameObject);
         textMeshPro.text = "";
     }
 
@@ -32,15 +33,19 @@ public class TileLogic : MonoBehaviour
 
     public void Reveal()
     {
+        if (state == State.revealed) return;
+
         state = State.revealed;
         if (mine)
         {
             SetColor(Color.red, gameObject);
+            GM.mines--;
         }
         else
         {
             SetText(neighbours.ToString());
             SetColor(Color.black, gameObject);
+            if (neighbours == 0) GM.Open(x, y);
         }
     }
 
@@ -50,25 +55,29 @@ public class TileLogic : MonoBehaviour
         {
             state = State.marked;
             SetColor(Color.white, gameObject);
+            GM.mines--;
         }
         else if (state == State.marked)
         {
             state = State.none;
-            SetColor(Color.grey, gameObject);
+            float rnd = Random.Range(0.49f, 0.51f);
+            SetColor(new Color(rnd, rnd, rnd), gameObject);
+            GM.mines++;
         }
     }
 
     public void CreateMine(int chance)
     {
-        if (Random.Range(0, 10) < chance)
+        if (Random.Range(0, 100) < chance)
         {
             mine = true;
+            GM.allMines++;
         }
     }
 
     public void CreateShow(int chance)
     {
-        if (Random.Range(0, 10) < chance)
+        if (Random.Range(0, 100) < chance)
         {
             Reveal();
         }

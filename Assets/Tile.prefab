@@ -275,6 +275,8 @@ MonoBehaviour:
   mine: 0
   state: 0
   textMeshPro: {fileID: 4900810692903668843}
+  x: 0
+  y: 0
 --- !u!61 &3151146060471345398
 BoxCollider2D:
   m_ObjectHideFlags: 0
