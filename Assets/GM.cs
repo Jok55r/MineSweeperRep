@@ -40,49 +40,28 @@ public class GM : MonoBehaviour
         Calculate();
     }
 
-    public TileLogic[] GetNeighbors(GameObject[,] tiles)
+    public static (int, int)[] GetNeighbors(int i, int j)
     {
-        TileLogic[] array = new TileLogic[8];
-        for (int i = 0; i < y; i++)
-        {
-            for (int j = 0; j < x; j++)
-            {
-                if (j > 0 && i > 0) array[0] = tiles[i - 1, j - 1].AddComponent<TileLogic>();
-                if (j > 0) array[1] = tiles[i, j - 1].AddComponent<TileLogic>();
-                if (i < tiles.GetLength(0) - 1 && j > 0) array[2] = tiles[i + 1, j - 1].AddComponent<TileLogic>();
-                if (i < tiles.GetLength(0) - 1) array[3] = tiles[i + 1, j].AddComponent<TileLogic>();
-                if (i < tiles.GetLength(0) - 1 && j < tiles.GetLength(1) - 1) array[4] = tiles[i + 1, j + 1].AddComponent<TileLogic>();
-                if (j < tiles.GetLength(1) - 1) array[5] = tiles[i, j + 1].AddComponent<TileLogic>();
-                if (i > 0 && j < tiles.GetLength(1) - 1) array[6] = tiles[i - 1, j + 1].AddComponent<TileLogic>();
-                if (i > 0) array[7] = tiles[i - 1, j].AddComponent<TileLogic>();
-            }
-        } 
-        /*if (j > 0 && i > 0) array[0] = tiles[i - 1, j - 1].AddComponent<TileLogic>();
-        if (j > 0) array[1] = tiles[i, j - 1].AddComponent<TileLogic>();
-        if (i < tiles.GetLength(0) - 1 && j > 0) array[2] = tiles[i + 1, j - 1].AddComponent<TileLogic>();
-        if (i < tiles.GetLength(0) - 1) array[3] = tiles[i + 1, j].AddComponent<TileLogic>();
-        if (i < tiles.GetLength(0) - 1 && j < tiles.GetLength(1) - 1) array[4] = tiles[i + 1, j + 1].AddComponent<TileLogic>();
-        if (j < tiles.GetLength(1) - 1) array[5] = tiles[i, j + 1].AddComponent<TileLogic>();
-        if (i > 0 && j < tiles.GetLength(1) - 1) array[6] = tiles[i - 1, j + 1].AddComponent<TileLogic>();
-        if (i > 0) array[7] = tiles[i - 1, j].AddComponent<TileLogic>();*/
+        (int, int)[] array = new (int, int)[8];
+
+        if (j > 0 && i > 0) array[0] = (i - 1, j - 1);
+        if (j > 0) array[1] = (i, j - 1);
+        if (i < tiles.GetLength(0) - 1 && j > 0) array[2] = (i + 1, j - 1);
+        if (i < tiles.GetLength(0) - 1) array[3] = (i + 1, j);
+        if (i < tiles.GetLength(0) - 1 && j < tiles.GetLength(1) - 1) array[4] = (i + 1, j + 1);
+        if (j < tiles.GetLength(1) - 1) array[5] = (i, j + 1);
+        if (i > 0 && j < tiles.GetLength(1) - 1) array[6] = (i - 1, j + 1);
+        if (i > 0) array[7] = (i - 1, j);
+
         return array;
     }
 
     public static void Open(int i, int j)
     {
-        /*foreach (var item in GetNeighbors(i, j))
+        foreach (var pos in GetNeighbors(i, j))
         {
-
-        }*/
-
-        if (i > 0) tiles[i - 1, j].GetComponent<TileLogic>().Reveal();
-        if (j > 0 && i > 0) tiles[i - 1, j - 1].GetComponent<TileLogic>().Reveal();
-        if (j > 0) tiles[i, j - 1].GetComponent<TileLogic>().Reveal();
-        if (i < tiles.GetLength(0) - 1 && j > 0) tiles[i + 1, j - 1].GetComponent<TileLogic>().Reveal();
-        if (i < tiles.GetLength(0) - 1) tiles[i + 1, j].GetComponent<TileLogic>().Reveal();
-        if (i < tiles.GetLength(0) - 1 && j < tiles.GetLength(1) - 1) tiles[i + 1, j + 1].GetComponent<TileLogic>().Reveal();
-        if (j < tiles.GetLength(1) - 1) tiles[i, j + 1].GetComponent<TileLogic>().Reveal();
-        if (i > 0 && j < tiles.GetLength(1) - 1) tiles[i - 1, j + 1].GetComponent<TileLogic>().Reveal();
+            tiles[pos.Item1, pos.Item2].AddComponent<TileLogic>().Reveal();
+        }
     }
 
     private static void ZeroNeighboursCheck(int i, int j)
@@ -98,19 +77,10 @@ public class GM : MonoBehaviour
             {
                 int sum = 0;
 
-                /*foreach (var item in GetNeighbors(i, j))
+                foreach (var pos in GetNeighbors(i, j))
                 {
-                    sum += item.mine ? 1 : 0;
-                }*/
-
-                if (j > 0 && i > 0 && IsMine(tiles[i - 1, j - 1])) sum++;
-                if (j > 0 && IsMine(tiles[i, j - 1])) sum++;
-                if (i < tiles.GetLength(0)-1 && j > 0 && IsMine(tiles[i + 1, j - 1])) sum++;
-                if (i < tiles.GetLength(0)-1 && IsMine(tiles[i + 1, j])) sum++;
-                if (i < tiles.GetLength(0)-1 && j < tiles.GetLength(1)-1 && IsMine(tiles[i + 1, j + 1])) sum++;
-                if (j < tiles.GetLength(1)-1 && IsMine(tiles[i, j + 1])) sum++;
-                if (i > 0 && j < tiles.GetLength(1)-1 && IsMine(tiles[i - 1, j + 1])) sum++;
-                if (i > 0 && IsMine(tiles[i - 1, j])) sum++;
+                    sum += tiles[pos.Item1, pos.Item2].GetComponent<TileLogic>().mine ? 1 : 0;
+                }
                 tiles[i,j].GetComponent<TileLogic>().SetNeighbors(sum);
             }
         }

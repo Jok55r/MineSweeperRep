@@ -46,6 +46,7 @@ public class TileLogic : MonoBehaviour
             SetText(neighbours.ToString());
             SetColor(Color.black, gameObject);
             if (neighbours == 0) GM.Open(x, y);
+            else GM.Open(x, y);
         }
     }
 
