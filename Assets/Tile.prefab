@@ -275,6 +275,8 @@ MonoBehaviour:
   mine: 0
   state: 0
   textMeshPro: {fileID: 4900810692903668843}
+  colorRND: 0.01
+  normalColor: {r: 0.41509432, g: 0.32306868, b: 0.32306868, a: 1}
   x: 0
   y: 0
 --- !u!61 &3151146060471345398

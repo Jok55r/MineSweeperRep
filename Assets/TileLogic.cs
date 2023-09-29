@@ -13,13 +13,16 @@ public class TileLogic : MonoBehaviour
     public bool mine = false;
     public State state = State.none;
     public TextMeshPro textMeshPro;
+    public float colorRND;
+    public Color normalColor;
     public int x;
     public int y;
 
     private void Start()
     {
-        float rnd = Random.Range(0.49f, 0.51f);
-        SetColor(new Color(rnd, rnd, rnd), gameObject);
+        float rnd = Random.Range(0.5f-colorRND, 0.5f+colorRND);
+        normalColor = new Color(rnd, rnd, rnd);
+        SetColor(normalColor, gameObject);
         textMeshPro.text = "";
     }
 
@@ -46,7 +49,6 @@ public class TileLogic : MonoBehaviour
             SetText(neighbours.ToString());
             SetColor(Color.black, gameObject);
             if (neighbours == 0) GM.Open(x, y);
-            else GM.Open(x, y);
         }
     }
 
@@ -61,8 +63,7 @@ public class TileLogic : MonoBehaviour
         else if (state == State.marked)
         {
             state = State.none;
-            float rnd = Random.Range(0.49f, 0.51f);
-            SetColor(new Color(rnd, rnd, rnd), gameObject);
+            SetColor(normalColor, gameObject);
             GM.mines++;
         }
     }

@@ -60,7 +60,7 @@ public class GM : MonoBehaviour
     {
         foreach (var pos in GetNeighbors(i, j))
         {
-            tiles[pos.Item1, pos.Item2].AddComponent<TileLogic>().Reveal();
+            tiles[pos.Item1, pos.Item2].GetComponent<TileLogic>().Reveal();
         }
     }
 
