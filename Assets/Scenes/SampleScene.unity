@@ -245,11 +245,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tmpMines: {fileID: 1622320284}
-  mineChance: 20
-  tilePref: {fileID: 3685753773885926030, guid: db77e0f15ccdfa64a906de8c659b2eef, type: 3}
-  scale: 10
+  sameGridType: 1
+  type: 1
+  mineChance: 15
   x: 25
   y: 25
+  tilePref: {fileID: 3685753773885926030, guid: db77e0f15ccdfa64a906de8c659b2eef, type: 3}
+  scale: 10
 --- !u!4 &1429225811
 Transform:
   m_ObjectHideFlags: 0

@@ -1,20 +1,18 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Timeline;
 using TMPro;
-using UnityEditor.Search;
 
 public class TileLogic : MonoBehaviour
 {
     public GameObject self;
-    public int neighbours;
-    public bool mine = false;
-    public State state = State.none;
-    public TextMeshPro textMeshPro;
     public float colorRND;
     public Color normalColor;
+    public TextMeshPro textMeshPro;
+
+    public bool mine = false;
+    public int neighbours;
+    public Type type;
+    public State state;
+
     public int x;
     public int y;
 
@@ -24,6 +22,7 @@ public class TileLogic : MonoBehaviour
         normalColor = new Color(rnd, rnd, rnd);
         SetColor(normalColor, gameObject);
         textMeshPro.text = "";
+        state = State.none;
     }
 
     private void OnMouseOver()
@@ -77,14 +76,6 @@ public class TileLogic : MonoBehaviour
         }
     }
 
-    public void CreateShow(int chance)
-    {
-        if (Random.Range(0, 100) < chance)
-        {
-            Reveal();
-        }
-    }
-
     public void SetColor(Color color, GameObject obj)
         => obj.GetComponent<SpriteRenderer>().color = color;
 
@@ -100,4 +91,16 @@ public enum State
     none,
     marked,
     revealed
+}
+
+public enum Type
+{
+    // "a" is normal square grid
+    // "b" is hexagonal grid
+
+    // number represents neighbors
+
+    a8,
+    a4,
+    //b6
 }

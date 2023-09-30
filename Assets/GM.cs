@@ -1,9 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Data;
-using System.Security.Cryptography.X509Certificates;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class GM : MonoBehaviour
@@ -12,15 +7,16 @@ public class GM : MonoBehaviour
     public static int allMines;
     public static int mines;
 
+    public bool sameGridType;
+    public Type type;
     public int mineChance;
+    public int x;
+    public int y;
 
     public GameObject tilePref;
     public float scale;
 
     public static GameObject[,] tiles;
-
-    public int x;
-    public int y;
 
     void Start()
     {
@@ -34,13 +30,52 @@ public class GM : MonoBehaviour
                 tiles[i, j].GetComponent<TileLogic>().CreateMine(mineChance);
                 tiles[i, j].GetComponent<TileLogic>().x = i;
                 tiles[i, j].GetComponent<TileLogic>().y = j;
+
+                if (sameGridType)
+                    tiles[i, j].GetComponent<TileLogic>().type = type;
+                else
+                    ;//tiles[i, j].GetComponent<TileLogic>().type = Random.d;
             }
         }
+
         mines = allMines;
         Calculate();
     }
 
-    public static (int, int)[] GetNeighbors(int i, int j)
+    public static void Open(int i, int j)
+    {
+        foreach (var pos in GetNeighbors(i, j, tiles[i, j].GetComponent<TileLogic>().type))
+        {
+            tiles[pos.Item1, pos.Item2].GetComponent<TileLogic>().Reveal();
+        }
+    }
+
+    private void Calculate()
+    {
+        for (int i = 0; i < y; i++)
+        {
+            for (int j = 0; j < x; j++)
+            {
+                int sum = 0;
+
+                foreach (var pos in GetNeighbors(i, j, tiles[i, j].GetComponent<TileLogic>().type))
+                {
+                    sum += tiles[pos.Item1, pos.Item2].GetComponent<TileLogic>().mine ? 1 : 0;
+                }
+                tiles[i,j].GetComponent<TileLogic>().SetNeighbors(sum);
+            }
+        }
+    }
+
+    public static (int, int)[] GetNeighbors(int i, int j, Type type)
+    {
+        if (type == Type.a8) return GetA8(i, j);
+        if (type == Type.a4) return GetA4(i, j);
+
+        return new (int, int)[0];
+    }
+
+    private static (int, int)[] GetA8(int i, int j)
     {
         (int, int)[] array = new (int, int)[8];
 
@@ -56,39 +91,27 @@ public class GM : MonoBehaviour
         return array;
     }
 
-    public static void Open(int i, int j)
+    private static (int, int)[] GetA4(int i, int j)
     {
-        foreach (var pos in GetNeighbors(i, j))
-        {
-            tiles[pos.Item1, pos.Item2].GetComponent<TileLogic>().Reveal();
-        }
-    }
+        (int, int)[] array = new (int, int)[4];
 
-    private static void ZeroNeighboursCheck(int i, int j)
-    {
-        if (i < 0 || j < 0 || i > tiles.GetLength(0) || j > tiles.GetLength(1)) return;
-    }
+        if (j > 0) array[0] = (i, j - 1);
+        if (i < tiles.GetLength(0) - 1) array[1] = (i + 1, j);
+        if (j < tiles.GetLength(1) - 1) array[2] = (i, j + 1);
+        if (i > 0) array[3] = (i - 1, j);
 
-    private void Calculate()
-    {
-        for (int i = 0; i < y; i++)
-        {
-            for (int j = 0; j < x; j++)
-            {
-                int sum = 0;
-
-                foreach (var pos in GetNeighbors(i, j))
-                {
-                    sum += tiles[pos.Item1, pos.Item2].GetComponent<TileLogic>().mine ? 1 : 0;
-                }
-                tiles[i,j].GetComponent<TileLogic>().SetNeighbors(sum);
-            }
-        }
+        return array;
     }
 
     private void Update()
     {
         tmpMines.text = $"{mines.ToString()} ({allMines.ToString()})";
+
+        Debug();
+    }
+
+    private void Debug()
+    {
         if (Input.GetKeyDown(KeyCode.Space))
         {
             foreach (var tile in tiles)
@@ -119,14 +142,5 @@ public class GM : MonoBehaviour
             foreach (var tile in tiles)
                 if (!tile.GetComponent<TileLogic>().mine && tile.GetComponent<TileLogic>().neighbours == 4) tile.GetComponent<TileLogic>().Reveal();
         }
-    }
-
-    private bool IsMine(GameObject tile)
-        => tile.GetComponent<TileLogic>().mine;
-
-    private bool IsMine(int i, int j)
-    {
-        if (i < 0 || j < 0 || i > tiles.GetLength(0) || j > tiles.GetLength(1)) return false;
-        return tiles[i,j].GetComponent<TileLogic>().mine;
     }
 }
