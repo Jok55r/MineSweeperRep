@@ -1,4 +1,6 @@
+using System;
 using TMPro;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class GM : MonoBehaviour
@@ -20,12 +22,14 @@ public class GM : MonoBehaviour
 
     void Start()
     {
+        Array values = Enum.GetValues(typeof(Type));
+
         tiles = new GameObject[y, x];
         for (int i = 0; i < y; i++)
         {
             for (int j = 0; j < x; j++)
             {
-                tiles[i, j] = Instantiate(tilePref, new Vector2(i * (scale/x) - 5f , j * (scale/y) - 5f), Quaternion.identity);
+                tiles[i, j] = Instantiate(tilePref, new Vector2(i * (scale/x) - 5f, j * (scale/y) - 5f), Quaternion.identity);
                 tiles[i, j].transform.localScale = new Vector3(scale / x, scale / y, 0);
                 tiles[i, j].GetComponent<TileLogic>().CreateMine(mineChance);
                 tiles[i, j].GetComponent<TileLogic>().x = i;
@@ -34,7 +38,7 @@ public class GM : MonoBehaviour
                 if (sameGridType)
                     tiles[i, j].GetComponent<TileLogic>().type = type;
                 else
-                    ;//tiles[i, j].GetComponent<TileLogic>().type = Random.d;
+                    tiles[i, j].GetComponent<TileLogic>().type = (Type)values.GetValue(new System.Random().Next(values.Length)); ;
             }
         }
 
