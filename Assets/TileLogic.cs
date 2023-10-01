@@ -8,8 +8,8 @@ public class TileLogic : MonoBehaviour
     public Color normalColor;
     public TextMeshPro textMeshPro;
 
-    public bool mine = false;
-    public int neighbours;
+    public bool isMine = false;
+    public int mines;
     public Type type;
     public State state;
     public TileLogic[] neighbors;
@@ -31,16 +31,24 @@ public class TileLogic : MonoBehaviour
         if (state == State.revealed) return;
 
         state = State.revealed;
-        if (mine)
+        if (isMine)
         {
             SetColor(Color.red, gameObject);
             GM.mines--;
         }
         else
         {
-            SetText(neighbours.ToString());
+            SetText(mines.ToString());
             SetColor(Color.black, gameObject);
-            if (neighbours == 0) GM.Open(x, y);
+            if (mines == 0) OpenNeighbors();
+        }
+    }
+
+    public void OpenNeighbors()
+    {
+        foreach (var tile in neighbors)
+        {
+            if (tile.state == State.none) tile.Reveal();
         }
     }
 
@@ -74,7 +82,7 @@ public class TileLogic : MonoBehaviour
     {
         if (Random.Range(0, 100) < chance)
         {
-            mine = true;
+            isMine = true;
             GM.allMines++;
         }
     }
@@ -85,8 +93,8 @@ public class TileLogic : MonoBehaviour
     public void SetText(string text)
         => textMeshPro.text = text == "0" ? "" : text;
 
-    public void SetNeighbors(int neighbours)
-        => this.neighbours = neighbours;
+    public void SetNeighbors(int neighbors)
+        => mines = neighbors;
 }
 
 public enum State

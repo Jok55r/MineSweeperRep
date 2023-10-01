@@ -1,7 +1,5 @@
 using System;
-using System.Net.Http.Headers;
 using TMPro;
-using Unity.Mathematics;
 using UnityEngine;
 
 public class GM : MonoBehaviour
@@ -58,14 +56,6 @@ public class GM : MonoBehaviour
         };
     }
 
-    public static void Open(int i, int j)
-    {
-        foreach (var pos in GetNeighbors(i, j, tiles[i, j].type))
-        {
-            tiles[pos.Item1, pos.Item2].Reveal();
-        }
-    }
-
     private void PrepareEverything()
     {
         for (int i = 0; i < y; i++)
@@ -78,7 +68,7 @@ public class GM : MonoBehaviour
 
                 foreach (var pos in GetNeighbors(i, j, tiles[i, j].type))
                 {
-                    sum += tiles[pos.Item1, pos.Item2].mine ? 1 : 0;
+                    sum += tiles[pos.Item1, pos.Item2].isMine ? 1 : 0;
                     tiles[i, j].neighbors[k] = tiles[pos.x, pos.y];
                     k++;
                 }
@@ -87,31 +77,50 @@ public class GM : MonoBehaviour
         }
     }
 
-    public static (int x, int y)[] GetNeighbors(int i, int j, Type type)
+    public (int x, int y)[] GetNeighbors(int i, int j, Type type)
     {
-        if (type == Type.a8) return GetA8(i, j);
-        if (type == Type.a4a) return GetA4(i, j);
-
-        return new (int, int)[0];
+        return type switch
+        {
+            Type.a8 => GetA8(i, j),
+            Type.a4a => GetA4a(i, j),
+            Type.a4b => GetA4b(i, j),
+        };
     }
 
-    private static (int, int)[] GetA8(int i, int j)
+    private void Update()
+    {
+        tmpMines.text = $"{mines.ToString()} ({allMines.ToString()})";
+
+        Debug();
+    }
+     
+
+    // !!! WARNING: YOU ARE ENTERING THE ZONE OF GOVNO CODE !!!
+
+
+    private (int, int)[] GetA8(int i, int j)
     {
         (int, int)[] array = new (int, int)[8];
 
-        if (j > 0 && i > 0) array[0] = (i - 1, j - 1);
-        if (j > 0) array[1] = (i, j - 1);
-        if (i < tiles.GetLength(0) - 1 && j > 0) array[2] = (i + 1, j - 1);
-        if (i < tiles.GetLength(0) - 1) array[3] = (i + 1, j);
-        if (i < tiles.GetLength(0) - 1 && j < tiles.GetLength(1) - 1) array[4] = (i + 1, j + 1);
-        if (j < tiles.GetLength(1) - 1) array[5] = (i, j + 1);
-        if (i > 0 && j < tiles.GetLength(1) - 1) array[6] = (i - 1, j + 1);
-        if (i > 0) array[7] = (i - 1, j);
+        int k = 0;
+        var a4a = GetA4a(i, j);
+        var a4ab = GetA4b(i, j);
+
+        foreach (var item in a4a)
+        {
+            array[k] = item;
+            k++;
+        }
+        foreach (var item in a4ab)
+        {
+            array[k] = item;
+            k++;
+        }
 
         return array;
     }
 
-    private static (int, int)[] GetA4(int i, int j)
+    private (int, int)[] GetA4a(int i, int j)
     {
         (int, int)[] array = new (int, int)[4];
 
@@ -123,11 +132,16 @@ public class GM : MonoBehaviour
         return array;
     }
 
-    private void Update()
+    private (int, int)[] GetA4b(int i, int j)
     {
-        tmpMines.text = $"{mines.ToString()} ({allMines.ToString()})";
+        (int, int)[] array = new (int, int)[4];
 
-        Debug();
+        if (j > 0 && i > 0) array[0] = (i - 1, j - 1);
+        if (i < tiles.GetLength(0) - 1 && j > 0) array[1] = (i + 1, j - 1);
+        if (i < tiles.GetLength(0) - 1 && j < tiles.GetLength(1) - 1) array[2] = (i + 1, j + 1);
+        if (i > 0 && j < tiles.GetLength(1) - 1) array[3] = (i - 1, j + 1);
+
+        return array;
     }
 
     private void Debug()
@@ -140,27 +154,27 @@ public class GM : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Keypad0))
         {
             foreach (var tile in tiles)
-                if (!tile.mine && tile.neighbours == 0) tile.Reveal();
+                if (!tile.isMine && tile.mines == 0) tile.Reveal();
         }
         if (Input.GetKeyDown(KeyCode.Keypad1))
         {
             foreach (var tile in tiles)
-                if (!tile.mine && tile.neighbours == 1) tile.Reveal();
+                if (!tile.isMine && tile.mines == 1) tile.Reveal();
         }
         if (Input.GetKeyDown(KeyCode.Keypad2))
         {
             foreach (var tile in tiles)
-                if (!tile.mine && tile.neighbours == 2) tile.Reveal();
+                if (!tile.isMine && tile.mines == 2) tile.Reveal();
         }
         if (Input.GetKeyDown(KeyCode.Keypad3))
         {
             foreach (var tile in tiles)
-                if (!tile.mine && tile.neighbours == 3) tile.Reveal();
+                if (!tile.isMine && tile.mines == 3) tile.Reveal();
         }
         if (Input.GetKeyDown(KeyCode.Keypad4))
         {
             foreach (var tile in tiles)
-                if (!tile.mine && tile.neighbours == 4) tile.Reveal();
+                if (!tile.isMine && tile.mines == 4) tile.Reveal();
         }
     }
 }
