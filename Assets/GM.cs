@@ -1,4 +1,5 @@
 using System;
+using System.Net.Http.Headers;
 using TMPro;
 using Unity.Mathematics;
 using UnityEngine;
@@ -18,63 +19,78 @@ public class GM : MonoBehaviour
     public GameObject tilePref;
     public float scale;
 
-    public static GameObject[,] tiles;
+    public static TileLogic[,] tiles;
 
     void Start()
     {
         Array values = Enum.GetValues(typeof(Type));
 
-        tiles = new GameObject[y, x];
+        tiles = new TileLogic[y, x];
         for (int i = 0; i < y; i++)
         {
             for (int j = 0; j < x; j++)
             {
-                tiles[i, j] = Instantiate(tilePref, new Vector2(i * (scale/x) - 5f, j * (scale/y) - 5f), Quaternion.identity);
-                tiles[i, j].transform.localScale = new Vector3(scale / x, scale / y, 0);
-                tiles[i, j].GetComponent<TileLogic>().CreateMine(mineChance);
-                tiles[i, j].GetComponent<TileLogic>().x = i;
-                tiles[i, j].GetComponent<TileLogic>().y = j;
+                GameObject t = Instantiate(tilePref, new Vector2(i * (scale/x) - 5f, j * (scale/y) - 5f), Quaternion.identity);
+                tiles[i, j] = t.GetComponent<TileLogic>();
+                tiles[i, j].gameObject.transform.localScale = new Vector3(scale / x, scale / y, 0);
+                tiles[i, j].CreateMine(mineChance);
+                tiles[i, j].x = i;
+                tiles[i, j].y = j;
 
                 if (sameGridType)
-                    tiles[i, j].GetComponent<TileLogic>().type = type;
+                    tiles[i, j].type = type;
                 else
-                    tiles[i, j].GetComponent<TileLogic>().type = (Type)values.GetValue(new System.Random().Next(values.Length)); ;
+                    tiles[i, j].type = (Type)values.GetValue(new System.Random().Next(values.Length));
             }
         }
 
         mines = allMines;
-        Calculate();
+        PrepareEverything();
+    }
+
+    private int CreateNeighbors(TileLogic tile)
+    {
+        return tile.type switch
+        {
+            Type.a8 => 8,
+            Type.a4a => 4,
+            Type.a4b => 4,
+        };
     }
 
     public static void Open(int i, int j)
     {
-        foreach (var pos in GetNeighbors(i, j, tiles[i, j].GetComponent<TileLogic>().type))
+        foreach (var pos in GetNeighbors(i, j, tiles[i, j].type))
         {
-            tiles[pos.Item1, pos.Item2].GetComponent<TileLogic>().Reveal();
+            tiles[pos.Item1, pos.Item2].Reveal();
         }
     }
 
-    private void Calculate()
+    private void PrepareEverything()
     {
         for (int i = 0; i < y; i++)
         {
             for (int j = 0; j < x; j++)
             {
                 int sum = 0;
+                tiles[i, j].neighbors = new TileLogic[CreateNeighbors(tiles[i, j])];
+                int k = 0;
 
-                foreach (var pos in GetNeighbors(i, j, tiles[i, j].GetComponent<TileLogic>().type))
+                foreach (var pos in GetNeighbors(i, j, tiles[i, j].type))
                 {
-                    sum += tiles[pos.Item1, pos.Item2].GetComponent<TileLogic>().mine ? 1 : 0;
+                    sum += tiles[pos.Item1, pos.Item2].mine ? 1 : 0;
+                    tiles[i, j].neighbors[k] = tiles[pos.x, pos.y];
+                    k++;
                 }
-                tiles[i,j].GetComponent<TileLogic>().SetNeighbors(sum);
+                tiles[i,j].SetNeighbors(sum);
             }
         }
     }
 
-    public static (int, int)[] GetNeighbors(int i, int j, Type type)
+    public static (int x, int y)[] GetNeighbors(int i, int j, Type type)
     {
         if (type == Type.a8) return GetA8(i, j);
-        if (type == Type.a4) return GetA4(i, j);
+        if (type == Type.a4a) return GetA4(i, j);
 
         return new (int, int)[0];
     }
@@ -119,32 +135,32 @@ public class GM : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             foreach (var tile in tiles)
-                tile.GetComponent<TileLogic>().Reveal();
+                tile.Reveal();
         }
         if (Input.GetKeyDown(KeyCode.Keypad0))
         {
             foreach (var tile in tiles)
-                if (!tile.GetComponent<TileLogic>().mine && tile.GetComponent<TileLogic>().neighbours == 0) tile.GetComponent<TileLogic>().Reveal();
+                if (!tile.mine && tile.neighbours == 0) tile.Reveal();
         }
         if (Input.GetKeyDown(KeyCode.Keypad1))
         {
             foreach (var tile in tiles)
-                if (!tile.GetComponent<TileLogic>().mine && tile.GetComponent<TileLogic>().neighbours == 1) tile.GetComponent<TileLogic>().Reveal();
+                if (!tile.mine && tile.neighbours == 1) tile.Reveal();
         }
         if (Input.GetKeyDown(KeyCode.Keypad2))
         {
             foreach (var tile in tiles)
-                if (!tile.GetComponent<TileLogic>().mine && tile.GetComponent<TileLogic>().neighbours == 2) tile.GetComponent<TileLogic>().Reveal();
+                if (!tile.mine && tile.neighbours == 2) tile.Reveal();
         }
         if (Input.GetKeyDown(KeyCode.Keypad3))
         {
             foreach (var tile in tiles)
-                if (!tile.GetComponent<TileLogic>().mine && tile.GetComponent<TileLogic>().neighbours == 3) tile.GetComponent<TileLogic>().Reveal();
+                if (!tile.mine && tile.neighbours == 3) tile.Reveal();
         }
         if (Input.GetKeyDown(KeyCode.Keypad4))
         {
             foreach (var tile in tiles)
-                if (!tile.GetComponent<TileLogic>().mine && tile.GetComponent<TileLogic>().neighbours == 4) tile.GetComponent<TileLogic>().Reveal();
+                if (!tile.mine && tile.neighbours == 4) tile.Reveal();
         }
     }
 }

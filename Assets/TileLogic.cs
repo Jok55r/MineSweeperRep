@@ -12,6 +12,7 @@ public class TileLogic : MonoBehaviour
     public int neighbours;
     public Type type;
     public State state;
+    public TileLogic[] neighbors;
 
     public int x;
     public int y;
@@ -23,14 +24,6 @@ public class TileLogic : MonoBehaviour
         SetColor(normalColor, gameObject);
         textMeshPro.text = "";
         state = State.none;
-    }
-
-    private void OnMouseOver()
-    {
-        if (Input.GetKeyDown(KeyCode.Mouse0))
-            Reveal();
-        if (Input.GetKeyDown(KeyCode.Mouse1))
-            Mark();
     }
 
     public void Reveal()
@@ -66,6 +59,16 @@ public class TileLogic : MonoBehaviour
             GM.mines++;
         }
     }
+    
+
+    private void OnMouseOver()
+    {
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+            Reveal();
+        if (Input.GetKeyDown(KeyCode.Mouse1))
+            Mark();
+    }
+
 
     public void CreateMine(int chance)
     {
@@ -101,6 +104,7 @@ public enum Type
     // number represents neighbors
 
     a8,
-    a4,
+    a4a,
+    a4b
     //b6
 }

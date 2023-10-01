@@ -247,7 +247,7 @@ MonoBehaviour:
   tmpMines: {fileID: 1622320284}
   sameGridType: 1
   type: 0
-  mineChance: 5
+  mineChance: 20
   x: 30
   y: 30
   tilePref: {fileID: 3685753773885926030, guid: db77e0f15ccdfa64a906de8c659b2eef, type: 3}
