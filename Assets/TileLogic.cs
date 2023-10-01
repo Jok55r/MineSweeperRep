@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using System.ComponentModel;
 
 public class TileLogic : MonoBehaviour
 {
@@ -8,9 +9,9 @@ public class TileLogic : MonoBehaviour
     public Color normalColor;
     public TextMeshPro textMeshPro;
 
-    public bool isMine = false;
-    public int mines;
     public Type type;
+    public int mines;
+    public NeighborType neighborType;
     public State state;
     public TileLogic[] neighbors;
 
@@ -31,7 +32,7 @@ public class TileLogic : MonoBehaviour
         if (state == State.revealed) return;
 
         state = State.revealed;
-        if (isMine)
+        if (type == Type.bomb)
         {
             SetColor(Color.red, gameObject);
             GM.mines--;
@@ -67,7 +68,23 @@ public class TileLogic : MonoBehaviour
             GM.mines++;
         }
     }
+
+    public void ChooseType(int mineChance, int questionChance, int exclamationChance)
+    {
+        if (Random.Range(0, 100) < mineChance)
+        {
+            type = Type.bomb;
+            GM.allMines++;
+        }
+        else if (Random.Range(0, 100) < questionChance)
+            type = Type.question;
+        else if (Random.Range(0, 100) < exclamationChance)
+            type = Type.exclamation;
+        else
+            type = Type.normal;
+    }
     
+
 
     private void OnMouseOver()
     {
@@ -77,21 +94,29 @@ public class TileLogic : MonoBehaviour
             Mark();
     }
 
-
-    public void CreateMine(int chance)
-    {
-        if (Random.Range(0, 100) < chance)
-        {
-            isMine = true;
-            GM.allMines++;
-        }
-    }
-
     public void SetColor(Color color, GameObject obj)
         => obj.GetComponent<SpriteRenderer>().color = color;
 
     public void SetText(string text)
-        => textMeshPro.text = text == "0" ? "" : text;
+    {
+        if (text == "0")
+        {
+            textMeshPro.text = "";
+        }
+        else if (type == Type.question)
+        {
+            textMeshPro.text = "?";
+        }
+        else if (type == Type.exclamation)
+        {
+            int rnd = Random.Range(0, 2) == 0 ? mines - 1 : mines + 1;
+            textMeshPro.text = (rnd == 0 ? 2 : rnd) + "!";
+        }
+        else
+        {
+            textMeshPro.text = text;
+        }
+    }
 
     public void SetNeighbors(int neighbors)
         => mines = neighbors;
@@ -105,6 +130,14 @@ public enum State
 }
 
 public enum Type
+{
+    bomb,
+    normal,
+    question,
+    exclamation
+}
+
+public enum NeighborType
 {
     // "a" is normal square grid
     // "b" is hexagonal grid
