@@ -245,13 +245,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tmpMines: {fileID: 1622320284}
-  mineChance: 30
-  questionChance: 20
-  exclamationChance: 30
   sameGridType: 1
   type: 0
-  x: 25
-  y: 25
+  mineChance: 20
+  x: 30
+  y: 30
   tilePref: {fileID: 3685753773885926030, guid: db77e0f15ccdfa64a906de8c659b2eef, type: 3}
   scale: 9
 --- !u!4 &1429225811

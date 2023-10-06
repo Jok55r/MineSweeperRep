@@ -8,13 +8,9 @@ public class GM : MonoBehaviour
     public static int allMines;
     public static int mines;
 
-    public int mineChance;
-    public int questionChance;
-    public int exclamationChance;
-
     public bool sameGridType;
-    public NeighborType type;
-
+    public Type type;
+    public int mineChance;
     public int x;
     public int y;
 
@@ -25,7 +21,7 @@ public class GM : MonoBehaviour
 
     void Start()
     {
-        Array values = Enum.GetValues(typeof(NeighborType));
+        Array values = Enum.GetValues(typeof(Type));
 
         tiles = new TileLogic[y, x];
         for (int i = 0; i < y; i++)
@@ -35,14 +31,14 @@ public class GM : MonoBehaviour
                 GameObject t = Instantiate(tilePref, new Vector2(i * (scale/x) - 5f, j * (scale/y) - 5f), Quaternion.identity);
                 tiles[i, j] = t.GetComponent<TileLogic>();
                 tiles[i, j].gameObject.transform.localScale = new Vector3(scale / x, scale / y, 0);
-                tiles[i, j].ChooseType(mineChance, questionChance, exclamationChance);
+                tiles[i, j].CreateMine(mineChance);
                 tiles[i, j].x = i;
                 tiles[i, j].y = j;
 
                 if (sameGridType)
-                    tiles[i, j].neighborType = type;
+                    tiles[i, j].type = type;
                 else
-                    tiles[i, j].neighborType = (NeighborType)values.GetValue(new System.Random().Next(values.Length));
+                    tiles[i, j].type = (Type)values.GetValue(new System.Random().Next(values.Length));
             }
         }
 
@@ -52,11 +48,11 @@ public class GM : MonoBehaviour
 
     private int CreateNeighbors(TileLogic tile)
     {
-        return tile.neighborType switch
+        return tile.type switch
         {
-            NeighborType.a8 => 8,
-            NeighborType.a4a => 4,
-            NeighborType.a4b => 4,
+            Type.a8 => 8,
+            Type.a4a => 4,
+            Type.a4b => 4,
         };
     }
 
@@ -70,9 +66,9 @@ public class GM : MonoBehaviour
                 tiles[i, j].neighbors = new TileLogic[CreateNeighbors(tiles[i, j])];
                 int k = 0;
 
-                foreach (var pos in GetNeighbors(i, j, tiles[i, j].neighborType))
+                foreach (var pos in GetNeighbors(i, j, tiles[i, j].type))
                 {
-                    sum += tiles[pos.Item1, pos.Item2].type == Type.bomb ? 1 : 0;
+                    sum += tiles[pos.Item1, pos.Item2].isMine ? 1 : 0;
                     tiles[i, j].neighbors[k] = tiles[pos.x, pos.y];
                     k++;
                 }
@@ -81,13 +77,13 @@ public class GM : MonoBehaviour
         }
     }
 
-    public (int x, int y)[] GetNeighbors(int i, int j, NeighborType type)
+    public (int x, int y)[] GetNeighbors(int i, int j, Type type)
     {
         return type switch
         {
-            NeighborType.a8 => GetA8(i, j),
-            NeighborType.a4a => GetA4a(i, j),
-            NeighborType.a4b => GetA4b(i, j),
+            Type.a8 => GetA8(i, j),
+            Type.a4a => GetA4a(i, j),
+            Type.a4b => GetA4b(i, j),
         };
     }
 
@@ -158,27 +154,27 @@ public class GM : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Keypad0))
         {
             foreach (var tile in tiles)
-                if (tile.type != Type.bomb && tile.mines == 0) tile.Reveal();
+                if (!tile.isMine && tile.mines == 0) tile.Reveal();
         }
         if (Input.GetKeyDown(KeyCode.Keypad1))
         {
             foreach (var tile in tiles)
-                if (tile.type != Type.bomb && tile.mines == 1) tile.Reveal();
+                if (!tile.isMine && tile.mines == 1) tile.Reveal();
         }
         if (Input.GetKeyDown(KeyCode.Keypad2))
         {
             foreach (var tile in tiles)
-                if (tile.type != Type.bomb && tile.mines == 2) tile.Reveal();
+                if (!tile.isMine && tile.mines == 2) tile.Reveal();
         }
         if (Input.GetKeyDown(KeyCode.Keypad3))
         {
             foreach (var tile in tiles)
-                if (tile.type != Type.bomb && tile.mines == 3) tile.Reveal();
+                if (!tile.isMine && tile.mines == 3) tile.Reveal();
         }
         if (Input.GetKeyDown(KeyCode.Keypad4))
         {
             foreach (var tile in tiles)
-                if (tile.type != Type.bomb && tile.mines == 4) tile.Reveal();
+                if (!tile.isMine && tile.mines == 4) tile.Reveal();
         }
     }
 }
