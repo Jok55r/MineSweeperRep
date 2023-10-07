@@ -68,13 +68,36 @@ public class TileLogic : MonoBehaviour
         }
     }
     
+    private void MakeTile()
+    {
+        isMine = false;
+        Reveal();
+        GM.CountNeighbors(x, y);
+    }
+
+    private void MakeBomb()
+    {
+        isMine = true;
+        Reveal();
+        GM.CountNeighbors(x, y);
+    }
 
     private void OnMouseOver()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse0))
-            Reveal();
-        if (Input.GetKeyDown(KeyCode.Mouse1))
-            Mark();
+        if (!GM.creating)
+        {
+            if (Input.GetKeyDown(KeyCode.Mouse0))
+                MakeTile();
+            if (Input.GetKeyDown(KeyCode.Mouse1))
+                MakeBomb();
+        }
+        else
+        {
+            if (Input.GetKeyDown(KeyCode.Mouse0))
+                Reveal();
+            if (Input.GetKeyDown(KeyCode.Mouse1))
+                Mark();
+        }
     }
 
 
