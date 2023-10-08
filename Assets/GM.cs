@@ -20,6 +20,9 @@ public class GM : MonoBehaviour
 
     public static Tile[,] tiles;
 
+
+    #region Create Field
+
     void Start()
     {
         tiles = new Tile[y, x];
@@ -38,9 +41,6 @@ public class GM : MonoBehaviour
         foreach (var tile in tiles) 
             tile.ReCount();
     }
-
-    public void Creating(bool check)
-        => lvlMake = check;
 
     private void DestroyField()
     {
@@ -66,7 +66,11 @@ public class GM : MonoBehaviour
                 tiles[i, j].gameObject.transform.localScale = new Vector3(scale / x, scale / y, 0);
                 tiles[i, j].x = i;
                 tiles[i, j].y = j;
-                if (!lvlMake) CreateMine(i, j);
+                if (!lvlMake && UnityEngine.Random.Range(0, 100) < mineChance)
+                {
+                    tiles[i, j].type = Type.mine;
+                    GM.minesCount++;
+                }
 
                 if (sameGridType)
                     tiles[i, j].neighborType = type;
@@ -79,24 +83,9 @@ public class GM : MonoBehaviour
         PrepareEverything();
     }
 
-    public void CreateMine(int x, int y)
-    {
-        if (UnityEngine.Random.Range(0, 100) < mineChance)
-        {
-            tiles[x, y].type = Type.mine;
-            GM.minesCount++;
-        }
-    }
+    #endregion Create Field
 
-    private static int CreateNeighbors(Tile tile)
-    {
-        return tile.neighborType switch
-        {
-            NeighborType.a8 => 8,
-            NeighborType.a4 => 4,
-            _ => 0
-        };
-    }
+    #region Functions
 
     private void PrepareEverything()
     {
@@ -127,6 +116,16 @@ public class GM : MonoBehaviour
         tiles[i, j].SetNeighbors(sum);
     }
 
+    private static int CreateNeighbors(Tile tile)
+    {
+        return tile.neighborType switch
+        {
+            NeighborType.a8 => 8,
+            NeighborType.a4 => 4,
+            _ => 0
+        };
+    }
+
     public static (int x, int y)[] GetNeighbors(int i, int j, NeighborType type)
     {
         return type switch
@@ -137,12 +136,17 @@ public class GM : MonoBehaviour
         };
     }
 
+    #endregion Functions
+
     private void Update()
     {
         tmpMines.text = $"{currentMinesCount.ToString()} ({minesCount.ToString()})";
 
         Debug();
     }
+
+    public void Creating(bool check)
+        => lvlMake = check;
      
 
     // !!! WARNING: YOU ARE ENTERING THE ZONE OF GOVNO CODE !!!
