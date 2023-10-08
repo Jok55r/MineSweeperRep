@@ -17,7 +17,7 @@ public class VisualTile : MonoBehaviour
     public void SetColor(Tile tile)
     {
         Color color = Color.white;
-        if (tile.isMine)
+        if (tile.type == Type.mine)
         {
             color = Color.white;
         }

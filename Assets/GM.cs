@@ -5,25 +5,25 @@ using UnityEngine;
 public class GM : MonoBehaviour
 {
     public TextMeshPro tmpMines;
-    public static int allMines;
-    public static int mines;
+    public static int minesCount;
+    public static int currentMinesCount;
 
+    public GameObject tilePref;
+    public NeighborType type;
     public bool sameGridType;
-    public Type type;
     public int mineChance;
     public int x;
     public int y;
 
-    public GameObject tilePref;
-    public float scale;
-
     public static bool lvlMake;
+    private float scale = 9;
 
     public static Tile[,] tiles;
 
     void Start()
     {
         tiles = new Tile[y, x];
+        NewLevel();
     }
 
     public void NewLevel()
@@ -36,7 +36,7 @@ public class GM : MonoBehaviour
     private void FieldMaker()
     {
         foreach (var tile in tiles) 
-            tile.Reveal();
+            tile.ReCount();
     }
 
     public void Creating(bool check)
@@ -49,12 +49,13 @@ public class GM : MonoBehaviour
             if (tile == null) break;
             Destroy(tile.gameObject);
         }
-        allMines = 0;
+        minesCount = 0;
     }
 
     private void CreateField()
     {
-        Array values = Enum.GetValues(typeof(Type));
+        tiles = new Tile[y, x];
+        Array values = Enum.GetValues(typeof(NeighborType));
 
         for (int i = 0; i < y; i++)
         {
@@ -68,13 +69,13 @@ public class GM : MonoBehaviour
                 if (!lvlMake) CreateMine(i, j);
 
                 if (sameGridType)
-                    tiles[i, j].type = type;
+                    tiles[i, j].neighborType = type;
                 else
-                    tiles[i, j].type = (Type)values.GetValue(new System.Random().Next(values.Length));
+                    tiles[i, j].neighborType = (NeighborType)values.GetValue(new System.Random().Next(values.Length));
             }
         }
 
-        mines = allMines;
+        currentMinesCount = minesCount;
         PrepareEverything();
     }
 
@@ -82,17 +83,17 @@ public class GM : MonoBehaviour
     {
         if (UnityEngine.Random.Range(0, 100) < mineChance)
         {
-            tiles[x, y].isMine = true;
-            GM.allMines++;
+            tiles[x, y].type = Type.mine;
+            GM.minesCount++;
         }
     }
 
     private static int CreateNeighbors(Tile tile)
     {
-        return tile.type switch
+        return tile.neighborType switch
         {
-            Type.a8 => 8,
-            Type.a4a => 4,
+            NeighborType.a8 => 8,
+            NeighborType.a4 => 4,
             _ => 0
         };
     }
@@ -117,28 +118,28 @@ public class GM : MonoBehaviour
         tiles[i, j].neighbors = new Tile[CreateNeighbors(tiles[i, j])];
         int k = 0;
 
-        foreach (var pos in GetNeighbors(i, j, tiles[i, j].type))
+        foreach (var pos in GetNeighbors(i, j, tiles[i, j].neighborType))
         {
-            sum += tiles[pos.Item1, pos.Item2].isMine ? 1 : 0;
+            sum += tiles[pos.Item1, pos.Item2].type == Type.mine ? 1 : 0;
             tiles[i, j].neighbors[k] = tiles[pos.x, pos.y];
             k++;
         }
         tiles[i, j].SetNeighbors(sum);
     }
 
-    public static (int x, int y)[] GetNeighbors(int i, int j, Type type)
+    public static (int x, int y)[] GetNeighbors(int i, int j, NeighborType type)
     {
         return type switch
         {
-            Type.a8 => GetA8(i, j),
-            Type.a4a => GetA4a(i, j),
+            NeighborType.a8 => GetA8(i, j),
+            NeighborType.a4 => GetA4a(i, j),
             _ => null
         };
     }
 
     private void Update()
     {
-        tmpMines.text = $"{mines.ToString()} ({allMines.ToString()})";
+        tmpMines.text = $"{currentMinesCount.ToString()} ({minesCount.ToString()})";
 
         Debug();
     }
@@ -203,47 +204,47 @@ public class GM : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Keypad0))
         {
             foreach (var tile in tiles)
-                if (!tile.isMine && tile.mineCount == 0) tile.Reveal();
+                if (tile.type != Type.mine && tile.mineCount == 0) tile.Reveal();
         }
         if (Input.GetKeyDown(KeyCode.Keypad1))
         {
             foreach (var tile in tiles)
-                if (!tile.isMine && tile.mineCount == 1) tile.Reveal();
+                if (tile.type != Type.mine && tile.mineCount == 1) tile.Reveal();
         }
         if (Input.GetKeyDown(KeyCode.Keypad2))
         {
             foreach (var tile in tiles)
-                if (!tile.isMine && tile.mineCount == 2) tile.Reveal();
+                if (tile.type != Type.mine && tile.mineCount == 2) tile.Reveal();
         }
         if (Input.GetKeyDown(KeyCode.Keypad3))
         {
             foreach (var tile in tiles)
-                if (!tile.isMine && tile.mineCount == 3) tile.Reveal();
+                if (tile.type != Type.mine && tile.mineCount == 3) tile.Reveal();
         }
         if (Input.GetKeyDown(KeyCode.Keypad4))
         {
             foreach (var tile in tiles)
-                if (!tile.isMine && tile.mineCount == 4) tile.Reveal();
+                if (tile.type != Type.mine && tile.mineCount == 4) tile.Reveal();
         }
         if (Input.GetKeyDown(KeyCode.Keypad5))
         {
             foreach (var tile in tiles)
-                if (!tile.isMine && tile.mineCount == 5) tile.Reveal();
+                if (tile.type != Type.mine && tile.mineCount == 5) tile.Reveal();
         }
         if (Input.GetKeyDown(KeyCode.Keypad6))
         {
             foreach (var tile in tiles)
-                if (!tile.isMine && tile.mineCount == 6) tile.Reveal();
+                if (tile.type != Type.mine && tile.mineCount == 6) tile.Reveal();
         }
         if (Input.GetKeyDown(KeyCode.Keypad7))
         {
             foreach (var tile in tiles)
-                if (!tile.isMine && tile.mineCount == 7) tile.Reveal();
+                if (tile.type != Type.mine && tile.mineCount == 7) tile.Reveal();
         }
         if (Input.GetKeyDown(KeyCode.Keypad8))
         {
             foreach (var tile in tiles)
-                if (!tile.isMine && tile.mineCount == 8) tile.Reveal();
+                if (tile.type != Type.mine && tile.mineCount == 8) tile.Reveal();
         }
     }
 }

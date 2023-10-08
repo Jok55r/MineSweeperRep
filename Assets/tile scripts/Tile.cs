@@ -5,8 +5,8 @@ public class Tile : MonoBehaviour
     public VisualTile visual;
 
     public State state = State.none;
+    public NeighborType neighborType;
     public Type type;
-    public bool isMine = false;
     public int mineCount;
 
     public Tile[] neighbors;
@@ -28,8 +28,8 @@ public class Tile : MonoBehaviour
     {
         state = State.revealed;
 
-        if (isMine)
-            GM.mines--;
+        if (type == Type.mine)
+            GM.currentMinesCount--;
         else if (mineCount == 0)
             OpenNeighbors();
 
@@ -41,12 +41,12 @@ public class Tile : MonoBehaviour
         if (state == State.none)
         {
             state = State.marked;
-            GM.mines--;
+            GM.currentMinesCount--;
         }
         else if (state == State.marked)
         {
             state = State.none;
-            GM.mines++;
+            GM.currentMinesCount++;
         }
         UpdateVisual();
     }
@@ -63,8 +63,8 @@ public class Tile : MonoBehaviour
 
     public void ChangeTile()
     {
-        isMine = !isMine;
-        GM.mines += isMine ? 1 : -1;
+        type = type == Type.mine ? Type.normal : Type.mine;
+        GM.currentMinesCount += type == Type.mine ? 1 : -1;
 
         foreach (var tile in neighbors)
             tile.ReCount();
@@ -72,7 +72,7 @@ public class Tile : MonoBehaviour
         UpdateVisual();
     }
 
-    private void ReCount()
+    public void ReCount()
     {
         GM.CountNeighbors(x, y);
         UpdateVisual();
@@ -103,12 +103,14 @@ public enum State
 
 public enum Type
 {
-    // "a" is normal square grid
-    // "b" is hexagonal grid
+    normal,
+    mine,
+    empty,
+}
 
-    // number represents neighbors
-
+public enum NeighborType
+{
     a8,
-    a4a
+    a4
     //b6
 }
