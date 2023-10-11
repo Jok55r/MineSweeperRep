@@ -14,6 +14,14 @@ public class Tile : MonoBehaviour
     public int x;
     public int y;
 
+    void Start()
+    {
+        NeighborStrategy.CountNeighbors(x, y);
+
+        if (GM.lvlMake)
+            Reveal();
+    }
+
     private void OnMouseOver()
     {
         if (GM.lvlMake && Input.GetKeyDown(KeyCode.Mouse0))

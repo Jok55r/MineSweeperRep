@@ -21,7 +21,7 @@ public class GM : MonoBehaviour
     public static Tile[,] tiles;
 
 
-    void Start()
+    void Awake()
     {
         tiles = new Tile[y, x];
         NewLevel();
@@ -69,7 +69,7 @@ public class GM : MonoBehaviour
                 if (!lvlMake && UnityEngine.Random.Range(0, 100) < mineChance)
                 {
                     tiles[i, j].type = Type.mine;
-                    GM.minesCount++;
+                    minesCount++;
                 }
 
                 if (sameGridType)
@@ -80,28 +80,10 @@ public class GM : MonoBehaviour
         }
 
         currentMinesCount = minesCount;
-        PrepareEverything();
     }
 
     #endregion Create Field
 
-    #region Functions
-
-    private void PrepareEverything()
-    {
-        for (int i = 0; i < y; i++)
-        {
-            for (int j = 0; j < x; j++)
-            {
-                NeighborStrategy.CountNeighbors(i, j);
-
-                if (lvlMake)
-                    tiles[i, j].Reveal();
-            }
-        }
-    }
-
-    #endregion Functions
 
     private void Update()
     {
@@ -115,7 +97,6 @@ public class GM : MonoBehaviour
      
 
     // !!! WARNING: YOU ARE ENTERING THE ZONE OF GOVNO CODE !!!
-
 
 
     private void Debug()

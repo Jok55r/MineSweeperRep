@@ -555,7 +555,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1429225810}
+      - m_Target: {fileID: 1429225812}
         m_TargetAssemblyTypeName: GM, Assembly-CSharp
         m_MethodName: NewLevel
         m_Mode: 1
@@ -689,7 +689,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1429225811}
-  - component: {fileID: 1429225810}
+  - component: {fileID: 1429225812}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -697,25 +697,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1429225810
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1429225809}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bf25ab22490d3c04eb5bbbccaa87a537, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tmpMines: {fileID: 1622320284}
-  tilePref: {fileID: 3685753773885926030, guid: db77e0f15ccdfa64a906de8c659b2eef, type: 3}
-  type: 0
-  sameGridType: 1
-  mineChance: 20
-  x: 15
-  y: 15
 --- !u!4 &1429225811
 Transform:
   m_ObjectHideFlags: 0
@@ -731,6 +712,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1429225812
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1429225809}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2336f66f443fe544986b5e86e6ffd51, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tmpMines: {fileID: 1622320284}
+  tilePref: {fileID: 3685753773885926030, guid: db77e0f15ccdfa64a906de8c659b2eef, type: 3}
+  type: 0
+  sameGridType: 1
+  mineChance: 20
+  x: 15
+  y: 15
 --- !u!1 &1622320283
 GameObject:
   m_ObjectHideFlags: 0
@@ -1055,10 +1055,10 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1429225810}
+      - m_Target: {fileID: 1429225812}
         m_TargetAssemblyTypeName: GM, Assembly-CSharp
         m_MethodName: Creating
-        m_Mode: 0
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
