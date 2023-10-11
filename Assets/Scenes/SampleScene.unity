@@ -716,7 +716,6 @@ MonoBehaviour:
   mineChance: 20
   x: 15
   y: 15
-  scale: 9
 --- !u!4 &1429225811
 Transform:
   m_ObjectHideFlags: 0
@@ -900,7 +899,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 7.47, y: 3.85}
+  m_AnchoredPosition: {x: 6.76, y: 3.78}
   m_SizeDelta: {x: 4, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2126993197

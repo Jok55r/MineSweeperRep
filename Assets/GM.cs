@@ -21,8 +21,6 @@ public class GM : MonoBehaviour
     public static Tile[,] tiles;
 
 
-    #region Create Field
-
     void Start()
     {
         tiles = new Tile[y, x];
@@ -35,6 +33,8 @@ public class GM : MonoBehaviour
         CreateField();
         if (lvlMake) FieldMaker();
     }
+
+    #region Create Field
 
     private void FieldMaker()
     {
@@ -93,47 +93,12 @@ public class GM : MonoBehaviour
         {
             for (int j = 0; j < x; j++)
             {
-                CountNeighbors(i, j);
+                NeighborStrategy.CountNeighbors(i, j);
 
                 if (lvlMake)
                     tiles[i, j].Reveal();
             }
         }
-    }
-
-    public static void CountNeighbors(int i, int j)
-    {
-        int sum = 0;
-        tiles[i, j].neighbors = new Tile[CreateNeighbors(tiles[i, j])];
-        int k = 0;
-
-        foreach (var pos in GetNeighbors(i, j, tiles[i, j].neighborType))
-        {
-            sum += tiles[pos.Item1, pos.Item2].type == Type.mine ? 1 : 0;
-            tiles[i, j].neighbors[k] = tiles[pos.x, pos.y];
-            k++;
-        }
-        tiles[i, j].SetNeighbors(sum);
-    }
-
-    private static int CreateNeighbors(Tile tile)
-    {
-        return tile.neighborType switch
-        {
-            NeighborType.a8 => 8,
-            NeighborType.a4 => 4,
-            _ => 0
-        };
-    }
-
-    public static (int x, int y)[] GetNeighbors(int i, int j, NeighborType type)
-    {
-        return type switch
-        {
-            NeighborType.a8 => GetA8(i, j),
-            NeighborType.a4 => GetA4a(i, j),
-            _ => null
-        };
     }
 
     #endregion Functions
@@ -152,51 +117,6 @@ public class GM : MonoBehaviour
     // !!! WARNING: YOU ARE ENTERING THE ZONE OF GOVNO CODE !!!
 
 
-    private static (int, int)[] GetA8(int i, int j)
-    {
-        (int, int)[] array = new (int, int)[8];
-
-        int k = 0;
-        var a4a = GetA4a(i, j);
-        var a4ab = GetA4b(i, j);
-
-        foreach (var item in a4a)
-        {
-            array[k] = item;
-            k++;
-        }
-        foreach (var item in a4ab)
-        {
-            array[k] = item;
-            k++;
-        }
-
-        return array;
-    }
-
-    private static (int, int)[] GetA4a(int i, int j)
-    {
-        (int, int)[] array = new (int, int)[4];
-
-        if (j > 0) array[0] = (i, j - 1);
-        if (i < tiles.GetLength(0) - 1) array[1] = (i + 1, j);
-        if (j < tiles.GetLength(1) - 1) array[2] = (i, j + 1);
-        if (i > 0) array[3] = (i - 1, j);
-
-        return array;
-    }
-
-    private static (int, int)[] GetA4b(int i, int j)
-    {
-        (int, int)[] array = new (int, int)[4];
-
-        if (j > 0 && i > 0) array[0] = (i - 1, j - 1);
-        if (i < tiles.GetLength(0) - 1 && j > 0) array[1] = (i + 1, j - 1);
-        if (i < tiles.GetLength(0) - 1 && j < tiles.GetLength(1) - 1) array[2] = (i + 1, j + 1);
-        if (i > 0 && j < tiles.GetLength(1) - 1) array[3] = (i - 1, j + 1);
-
-        return array;
-    }
 
     private void Debug()
     {

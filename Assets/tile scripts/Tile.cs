@@ -74,7 +74,7 @@ public class Tile : MonoBehaviour
 
     public void ReCount()
     {
-        GM.CountNeighbors(x, y);
+        NeighborStrategy.CountNeighbors(x, y);
         UpdateVisual();
     }
 
@@ -105,7 +105,6 @@ public enum Type
 {
     normal,
     mine,
-    empty,
 }
 
 public enum NeighborType

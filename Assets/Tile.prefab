@@ -318,8 +318,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   visual: {fileID: 6471562852722304182}
   state: 0
+  neighborType: 0
   type: 0
-  isMine: 0
   mineCount: 0
   neighbors: []
   x: 0
@@ -338,5 +338,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   colorRND: 0.01
   colorDarken: 0.03
-  tileColor: {r: 0.2609155, g: 0.27450982, b: 0.13725491, a: 1}
+  tileColor: {r: 0.8113208, g: 0.30714285, b: 0.2028302, a: 1}
   tmp: {fileID: 4900810692903668843}
