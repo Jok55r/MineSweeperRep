@@ -34,14 +34,21 @@ public class Tile : MonoBehaviour
 
     public void Reveal()
     {
-        state = State.revealed;
-
         if (type == Type.mine)
-            GM.currentMinesCount--;
-        else if (mineCount == 0)
-            OpenNeighbors();
+        {
+            state = State.marked;
 
-        UpdateVisual();
+            GM.currentMinesCount--;
+            GM.lost = true;
+        }
+        else
+        {
+            state = State.revealed; 
+            if (mineCount == 0)
+                OpenNeighbors();
+        }
+
+        visual.Render(this);
     }
 
     private void Mark()
@@ -56,7 +63,7 @@ public class Tile : MonoBehaviour
             state = State.none;
             GM.currentMinesCount++;
         }
-        UpdateVisual();
+        visual.Render(this);
     }
 
     public void OpenNeighbors()
@@ -77,29 +84,19 @@ public class Tile : MonoBehaviour
         foreach (var tile in neighbors)
             tile.ReCount();
 
-        UpdateVisual();
+        visual.Render(this);
     }
 
     public void ReCount()
     {
         NeighborStrategy.CountNeighbors(x, y);
-        UpdateVisual();
+        visual.Render(this);
     }
 
     #endregion making level
 
-    #region conection with other classes
-
     public void SetNeighbors(int neighbors)
         => mineCount = neighbors;
-
-    private void UpdateVisual()
-    {
-        visual.SetColor(this);
-        visual.SetText(mineCount.ToString());
-    }
-
-    #endregion conection with other classes
 }
 
 public enum State

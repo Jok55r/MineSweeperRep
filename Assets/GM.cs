@@ -1,29 +1,37 @@
 using System;
 using TMPro;
 using UnityEngine;
+using Unity;
+using UnityEditor;
+using Unity.VisualScripting;
+using System.IO;
+using UnityEngine.UIElements;
 
 public class GM : MonoBehaviour
 {
+    public GameObject losePanel;
     public TextMeshPro tmpMines;
     public static int minesCount;
     public static int currentMinesCount;
+    public static bool lost = false;
 
     public GameObject tilePref;
     public NeighborType type;
     public bool sameGridType;
     public int mineChance;
-    public int x;
     public int y;
+    public int x;
 
     public static bool lvlMake;
     private float scale = 9;
 
     public static Tile[,] tiles;
 
+    private string path = Application.dataPath + @"/Levels/";
 
     void Awake()
     {
-        tiles = new Tile[y, x];
+        tiles = new Tile[x, y];
         NewLevel();
     }
 
@@ -54,16 +62,16 @@ public class GM : MonoBehaviour
 
     private void CreateField()
     {
-        tiles = new Tile[y, x];
+        tiles = new Tile[x, y];
         Array values = Enum.GetValues(typeof(NeighborType));
 
-        for (int i = 0; i < y; i++)
+        for (int i = 0; i < x; i++)
         {
-            for (int j = 0; j < x; j++)
+            for (int j = 0; j < y; j++)
             {
-                GameObject t = Instantiate(tilePref, new Vector2(i * (scale / x) - 5f, j * (scale / y) - 5f), Quaternion.identity);
+                GameObject t = Instantiate(tilePref, new Vector2(i * (scale / y) - 5f, j * (scale / x) - 5f), Quaternion.identity);
                 tiles[i, j] = t.GetComponent<Tile>();
-                tiles[i, j].gameObject.transform.localScale = new Vector3(scale / x, scale / y, 0);
+                tiles[i, j].gameObject.transform.localScale = new Vector3(scale / y, scale / x, 0);
                 tiles[i, j].x = i;
                 tiles[i, j].y = j;
                 if (!lvlMake && UnityEngine.Random.Range(0, 100) < mineChance)
@@ -84,22 +92,59 @@ public class GM : MonoBehaviour
 
     #endregion Create Field
 
+    #region LevelManagement
+
+    public void SaveNewLevel(TextMeshProUGUI name) 
+    {
+        string fullPath = path + name.text + ".txt";
+        Debug.Log("saving to \"" + fullPath + "\"...");
+
+        StreamWriter sw = new StreamWriter(fullPath);
+
+        sw.WriteLine(y + ";" + x);
+        for (int i = y-1; i >= 0; i--)
+        {
+            for (int j = 0; j < x; j++)
+            {
+                sw.Write(tiles[j, i].type == Type.mine ? 1 : 0);
+            }
+            sw.Write('\n');
+        }
+
+        sw.Close();
+    }
+
+    public void LoadLevel(string name)
+    {
+
+    }
+
+    #endregion LevelManagement
 
     private void Update()
     {
-        tmpMines.text = $"{currentMinesCount.ToString()} ({minesCount.ToString()})";
+        tmpMines.text = $"{currentMinesCount} ({minesCount})";
 
-        Debug();
+        if (lost == true)
+        {
+            SetPanel(true);
+            lost = false;
+        }
+
+        DebugMethod();
     }
 
     public void Creating(bool check)
         => lvlMake = check;
+
+    public void SetPanel(bool boolean)
+        => losePanel.SetActive(boolean);
      
 
     // !!! WARNING: YOU ARE ENTERING THE ZONE OF GOVNO CODE !!!
 
 
-    private void Debug()
+    private void DebugMethod()
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {

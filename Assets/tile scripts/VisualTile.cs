@@ -14,16 +14,24 @@ public class VisualTile : MonoBehaviour
         tmp.text = "";
     }
 
+    public void Render(Tile tile)
+    {
+        SetColor(tile);
+        if (tile.state == State.revealed)
+            SetText(tile);
+    }
+
     public void SetColor(Tile tile)
     {
         Color color = Color.white;
-        if (tile.type == Type.mine)
-        {
-            color = Color.white;
-        }
-        else if (tile.state == State.none)
+        if (tile.state == State.none)
         {
             SetBasicColor();
+            return;
+        }
+        else if (tile.type == Type.mine)
+        {
+            color = Color.white;
         }
         else if (tile.state == State.revealed)
         {
@@ -41,9 +49,9 @@ public class VisualTile : MonoBehaviour
         gameObject.GetComponent<SpriteRenderer>().color = new Color(rnd, rnd, rnd);
     }
 
-    public void SetText(string text)
+    public void SetText(Tile tile)
     {
-        tmp.text = text == "0" ? "" : text;
+        tmp.text = tile.mineCount == 0 ? "" : tile.mineCount.ToString();
         if (AverageCol() > 0.5f)
             tmp.color = Color.black;
         else
