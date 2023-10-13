@@ -32,10 +32,8 @@ public class GM : MonoBehaviour
 
     void Awake()
     {
-        /*using (StreamReader sr = new StreamReader(txtName))
-        {
-
-        }*/
+        if (LoadLevel())
+            return;
         tiles = new Tile[x, y];
         NewLevel();
     }
@@ -74,16 +72,8 @@ public class GM : MonoBehaviour
         {
             for (int j = 0; j < y; j++)
             {
-                GameObject t = Instantiate(tilePref, new Vector2(i * (scale / y) - 5f, j * (scale / x) - 5f), Quaternion.identity);
-                tiles[i, j] = t.GetComponent<Tile>();
-                tiles[i, j].gameObject.transform.localScale = new Vector3(scale / y, scale / x, 0);
-                tiles[i, j].x = i;
-                tiles[i, j].y = j;
-                if (!lvlMake && UnityEngine.Random.Range(0, 100) < mineChance)
-                {
-                    tiles[i, j].type = Type.mine;
-                    minesCount++;
-                }
+                InstantiateTile(i, j);
+                CreateMines(i, j);
 
                 if (sameGridType)
                     tiles[i, j].neighborType = type;
@@ -93,6 +83,24 @@ public class GM : MonoBehaviour
         }
 
         currentMinesCount = minesCount;
+    }
+
+    private void InstantiateTile(int i, int j)
+    {
+        GameObject t = Instantiate(tilePref, new Vector2(i * (scale / y) - 5f, j * (scale / x) - 5f), Quaternion.identity);
+        tiles[i, j] = t.GetComponent<Tile>();
+        tiles[i, j].gameObject.transform.localScale = new Vector3(scale / y, scale / x, 0);
+        tiles[i, j].x = i;
+        tiles[i, j].y = j;
+    }
+
+    private void CreateMines(int i, int j)
+    {
+        if (!lvlMake && UnityEngine.Random.Range(0, 100) < mineChance)
+        {
+            tiles[i, j].type = Type.mine;
+            minesCount++;
+        }
     }
 
     #endregion Create Field
@@ -119,9 +127,32 @@ public class GM : MonoBehaviour
         sw.Close();
     }
 
-    public void LoadLevel(string name)
+    public bool LoadLevel()
     {
+        string lvlName = PlayerPrefs.GetString("level_name", "random");
+        Debug.Log("loaded " + lvlName);
+        if (lvlName == "random")
+            return false;
 
+        using (StreamReader sr = new StreamReader(path + lvlName + ".txt"))
+        {
+            string[] size = sr.ReadLine().Split(';');
+            y = Convert.ToInt32(size[0]);
+            x = Convert.ToInt32(size[1]);
+
+            tiles = new Tile[x, y];
+
+            for (int i = 0; i < y; i++)
+            {
+                string line = sr.ReadLine();
+                for (int j = 0; j < x; j++)
+                {
+                    InstantiateTile(i, j);
+                    tiles[i, j].type = line[j] == '1' ? Type.mine : Type.normal;
+                }
+            }
+        }
+        return true;
     }
 
     #endregion LevelManagement

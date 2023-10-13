@@ -39,11 +39,13 @@ public class Tile : MonoBehaviour
         {
             state = State.marked;
 
-            GM.currentMinesCount--;
             GM.lost = true;
         }
         else
         {
+            if (state == State.marked)
+                GM.currentMinesCount--;
+
             state = State.revealed; 
             if (mineCount == 0)
                 OpenNeighbors();
