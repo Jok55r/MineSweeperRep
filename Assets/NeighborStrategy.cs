@@ -1,97 +1,75 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class NeighborStrategy : MonoBehaviour
 {
-    public static int CreateNeighbors(Tile tile)
-    {
-        int delete = 0;
-        //if (tile.x == 0 || tile.x == GM.tiles.GetLength(0)) 
-        {
-            delete -= 3;
-            if (tile.y == 0 || tile.y == GM.tiles.GetLength(1))
-                delete -= 2;
-        }
-        //if (tile.y == 0 || tile.y == GM.tiles.GetLength(1))
-        {
-            delete -= 3;
-        }
-
-        return tile.neighborType switch
-        {
-            NeighborType.a8 => 8-delete,
-            NeighborType.a4 => 4-delete,
-            _ => 0
-        };
-    }
-    public static void CountNeighbors(int i, int j)
+    public static void CountNeighbors(Tile tile)
     {
         int sum = 0;
-        GM.tiles[i, j].neighbors = new Tile[CreateNeighbors(GM.tiles[i, j])];
+        tile.neighbors = new List<Tile>();
         int k = 0;
 
-        foreach (var pos in GetNeighbors(i, j, GM.tiles[i, j].neighborType))
+        foreach (var pos in GetNeighbors(tile))
         {
             sum += GM.tiles[pos.Item1, pos.Item2].type == Type.mine ? 1 : 0;
-            GM.tiles[i, j].neighbors[k] = GM.tiles[pos.x, pos.y];
+            tile.neighbors.Add(GM.tiles[pos.Item1, pos.Item2]);
             k++;
         }
-        GM.tiles[i, j].SetNeighbors(sum);
+        tile.SetNeighbors(sum);
     }
 
-    public static (int x, int y)[] GetNeighbors(int i, int j, NeighborType type)
+    public static List<(int, int)> GetNeighbors(Tile tile)
     {
-        return type switch
+        return tile.neighborType switch
         {
-            NeighborType.a8 => GetA8(i, j),
-            NeighborType.a4 => GetA4a(i, j),
+            NeighborType.a8 => GetA8(tile),
+            NeighborType.a4 => GetA4a(tile),
             _ => null
         };
     }
 
-    public static (int, int)[] GetA8(int i, int j)
+    public static List<(int, int)> GetA8(Tile tile)
     {
-        (int, int)[] array = new (int, int)[8];
+        List<(int, int)> array = new List<(int, int)>();
 
         int k = 0;
-        var a4a = GetA4a(i, j);
-        var a4ab = GetA4b(i, j);
+        var a4a = GetA4a(tile);
+        var a4ab = GetA4b(tile);
 
         foreach (var item in a4a)
         {
-            array[k] = item;
+            array.Add(item);
             k++;
         }
         foreach (var item in a4ab)
         {
-            array[k] = item;
+            array.Add(item);
             k++;
         }
 
         return array;
     }
 
-    public static (int, int)[] GetA4a(int i, int j)
+    public static List<(int, int)> GetA4a(Tile tile)
     {
-        (int, int)[] array = new (int, int)[4];
+        List<(int, int)> array = new List<(int, int)>();
 
-        if (j > 0) array[0] = (i, j - 1);
-        if (i < GM.tiles.GetLength(0) - 1) array[1] = (i + 1, j);
-        if (j < GM.tiles.GetLength(1) - 1) array[2] = (i, j + 1);
-        if (i > 0) array[3] = (i - 1, j);
+        if (tile.y > 0) array.Add((tile.x, tile.y - 1));
+        if (tile.x < GM.tiles.GetLength(0) - 1) array.Add((tile.x + 1, tile.y));
+        if (tile.y < GM.tiles.GetLength(1) - 1) array.Add((tile.x, tile.y + 1));
+        if (tile.x > 0) array.Add((tile.x - 1, tile.y));
 
         return array;
     }
 
-    public static (int, int)[] GetA4b(int i, int j)
+    public static List<(int, int)> GetA4b(Tile tile)
     {
-        (int, int)[] array = new (int, int)[4];
+        List<(int, int)> array = new List<(int, int)>();
 
-        if (j > 0 && i > 0) array[0] = (i - 1, j - 1);
-        if (i < GM.tiles.GetLength(0) - 1 && j > 0) array[1] = (i + 1, j - 1);
-        if (i < GM.tiles.GetLength(0) - 1 && j < GM.tiles.GetLength(1) - 1) array[2] = (i + 1, j + 1);
-        if (i > 0 && j < GM.tiles.GetLength(1) - 1) array[3] = (i - 1, j + 1);
+        if (tile.y > 0 && tile.x > 0) array.Add((tile.x - 1, tile.y - 1));
+        if (tile.x < GM.tiles.GetLength(0) - 1 && tile.y > 0) array.Add((tile.x + 1, tile.y - 1));
+        if (tile.x < GM.tiles.GetLength(0) - 1 && tile.y < GM.tiles.GetLength(1) - 1) array.Add((tile.x + 1, tile.y + 1));
+        if (tile.x > 0 && tile.y < GM.tiles.GetLength(1) - 1) array.Add((tile.x - 1, tile.y + 1));
 
         return array;
     }

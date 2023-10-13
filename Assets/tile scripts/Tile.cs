@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Tile : MonoBehaviour
@@ -9,14 +10,14 @@ public class Tile : MonoBehaviour
     public Type type;
     public int mineCount;
 
-    public Tile[] neighbors;
+    public List<Tile> neighbors;
 
     public int x;
     public int y;
 
     void Start()
     {
-        NeighborStrategy.CountNeighbors(x, y);
+        NeighborStrategy.CountNeighbors(this);
 
         if (GM.lvlMake)
             Reveal();
@@ -89,7 +90,7 @@ public class Tile : MonoBehaviour
 
     public void ReCount()
     {
-        NeighborStrategy.CountNeighbors(x, y);
+        NeighborStrategy.CountNeighbors(this);
         visual.Render(this);
     }
 
