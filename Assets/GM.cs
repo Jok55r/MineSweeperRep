@@ -6,6 +6,7 @@ using UnityEditor;
 using Unity.VisualScripting;
 using System.IO;
 using UnityEngine.UIElements;
+using System.Xml.Linq;
 
 public class GM : MonoBehaviour
 {
@@ -27,10 +28,14 @@ public class GM : MonoBehaviour
 
     public static Tile[,] tiles;
 
-    private string path = Application.dataPath + @"/Levels/";
+    public static string path = Application.dataPath + @"/Levels/";
 
     void Awake()
     {
+        /*using (StreamReader sr = new StreamReader(txtName))
+        {
+
+        }*/
         tiles = new Tile[x, y];
         NewLevel();
     }
