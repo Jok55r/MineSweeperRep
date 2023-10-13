@@ -134,8 +134,19 @@ public class GM : MonoBehaviour
         DebugMethod();
     }
 
-    public void Creating(bool check)
-        => lvlMake = check;
+    public void Creating()
+    {
+        lvlMake = !lvlMake;
+        if (lvlMake)
+        {
+            foreach (Tile tile in tiles)
+            {
+                tile.state = State.revealed;
+                tile.visual.Render(tile);
+            }
+        }
+
+    }
 
     public void SetPanel(bool boolean)
         => losePanel.SetActive(boolean);

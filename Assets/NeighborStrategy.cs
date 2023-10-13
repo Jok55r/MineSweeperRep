@@ -6,10 +6,22 @@ public class NeighborStrategy : MonoBehaviour
 {
     public static int CreateNeighbors(Tile tile)
     {
+        int delete = 0;
+        //if (tile.x == 0 || tile.x == GM.tiles.GetLength(0)) 
+        {
+            delete -= 3;
+            if (tile.y == 0 || tile.y == GM.tiles.GetLength(1))
+                delete -= 2;
+        }
+        //if (tile.y == 0 || tile.y == GM.tiles.GetLength(1))
+        {
+            delete -= 3;
+        }
+
         return tile.neighborType switch
         {
-            NeighborType.a8 => 8,
-            NeighborType.a4 => 4,
+            NeighborType.a8 => 8-delete,
+            NeighborType.a4 => 4-delete,
             _ => 0
         };
     }

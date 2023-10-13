@@ -17,8 +17,7 @@ public class VisualTile : MonoBehaviour
     public void Render(Tile tile)
     {
         SetColor(tile);
-        if (tile.state == State.revealed)
-            SetText(tile);
+        SetText(tile);
     }
 
     public void SetColor(Tile tile)
@@ -51,6 +50,12 @@ public class VisualTile : MonoBehaviour
 
     public void SetText(Tile tile)
     {
+        if (tile.type == Type.mine)
+        {
+            tmp.text = "";
+            return;
+        }
+
         tmp.text = tile.mineCount == 0 ? "" : tile.mineCount.ToString();
         if (AverageCol() > 0.5f)
             tmp.color = Color.black;
