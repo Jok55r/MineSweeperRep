@@ -25,11 +25,11 @@ public class InstantiateLevelList : MonoBehaviour
             GameObject obj = Instantiate(prefab, new Vector2(100 + i * offset, 500 - j * offset), Quaternion.identity, panel.transform);
 
 
-            obj.GetComponent<Button>().onClick = prefab.GetComponent<Button>().onClick;
-
+            //obj.GetComponent<Button>().onClick = prefab.GetComponent<Button>().onClick;
 
             obj.transform.Find("Text").gameObject.GetComponent<TextMeshProUGUI>().text = Path.GetFileNameWithoutExtension(name[name.Length - 1]);
             
+
             levelNames.Add(obj.transform.Find("Text").gameObject.GetComponent<TextMeshProUGUI>().text);
 
             i++;

@@ -50,7 +50,7 @@ public class VisualTile : MonoBehaviour
 
     public void SetText(Tile tile)
     {
-        if (tile.state != State.revealed)
+        if (tile.type == Type.mine || tile.state != State.revealed)
         {
             tmp.text = "";
             return;
