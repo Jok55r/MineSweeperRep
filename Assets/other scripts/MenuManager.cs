@@ -23,4 +23,10 @@ public class MenuManager : MonoBehaviour
 
     public void Menu()
         => SceneManager.LoadScene("Menu");
+
+    public void ExitGame()
+    {
+        UnityEngine.Application.Quit();
+        Debug.Log("Exited Application...");
+    }
 }

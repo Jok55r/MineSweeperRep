@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Tile : MonoBehaviour
@@ -12,15 +14,14 @@ public class Tile : MonoBehaviour
 
     public List<Tile> neighbors;
 
-    public int x;
-    public int y;
+    public Position pos;
 
-    void Start()
+    public void Start()
     {
         NeighborStrategy.CountNeighbors(this);
 
         if (GM.lvlMake)
-            Reveal();
+            Reveal(false);
     }
 
     private void OnMouseOver()
@@ -28,18 +29,18 @@ public class Tile : MonoBehaviour
         if (GM.lvlMake && Input.GetKeyDown(KeyCode.Mouse0))
             ChangeTile();
         else if (Input.GetKeyDown(KeyCode.Mouse0))
-            Reveal();
+            Reveal(true);
         else if (Input.GetKeyDown(KeyCode.Mouse1))
             Mark();
     }
 
-    public void Reveal()
+    public void Reveal(bool counts)
     {
-        if (type == Type.mine)
+        if (type == Type.mine && state != State.marked)
         {
             state = State.marked;
-
-            GM.lost = true;
+            GM.lost = counts;
+            GM.currentMinesCount--;
         }
         else
         {
@@ -73,7 +74,7 @@ public class Tile : MonoBehaviour
     {
         foreach (var tile in neighbors)
         {
-            if (tile.state == State.none) tile.Reveal();
+            if (tile.state == State.none) tile.Reveal(false);
         }
     }
 
@@ -98,8 +99,27 @@ public class Tile : MonoBehaviour
 
     #endregion making level
 
-    public void SetNeighbors(int neighbors)
-        => mineCount = neighbors;
+    private void OnMouseEnter()
+    {
+        foreach (var tile in neighbors)
+            tile.visual.Render(false);
+    }
+    private void OnMouseExit()
+    {
+        foreach (var tile in neighbors)
+            tile.visual.Render(true);
+    }
+}
+public class Position
+{
+    public int x;
+    public int y;
+
+    public Position(int x, int y)
+    {
+        this.x = x;
+        this.y = y;
+    }
 }
 
 public enum State

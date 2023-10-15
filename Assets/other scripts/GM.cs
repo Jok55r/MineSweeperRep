@@ -7,9 +7,13 @@ using Unity.VisualScripting;
 using System.IO;
 using UnityEngine.UIElements;
 using System.Xml.Linq;
+using System.Threading.Tasks;
+using System.Diagnostics;
 
 public class GM : MonoBehaviour
 {
+    public TextMeshProUGUI time;
+
     public GameObject losePanel;
     public TextMeshPro tmpMines;
     public static int minesCount;
@@ -32,17 +36,28 @@ public class GM : MonoBehaviour
 
     void Awake()
     {
-        if (LoadLevel())
-            return;
-        tiles = new Tile[x, y];
-        NewLevel();
+        LoadLevel();
     }
 
     public void NewLevel()
     {
-        DestroyField();
+        Stopwatch sw1 = Stopwatch.StartNew();
+        sw1 = Stopwatch.StartNew();
+
+        if (tiles[0, 0] != null) DestroyField();
+
+        sw1.Stop();
+        Stopwatch sw2 = Stopwatch.StartNew();
+        sw2 = Stopwatch.StartNew();
+
         CreateField();
         if (lvlMake) FieldMaker();
+
+        sw2.Stop();
+        TimeSpan ts1 = sw1.Elapsed;
+        TimeSpan ts2 = sw2.Elapsed;
+        time.text = "Destruction time: " + (ts1*4).ToString("ss\\.fff") + "\n"
+                    + "Creation time: " + (ts2*4).ToString("ss\\.fff") + "\n";
     }
 
     #region Create Field
@@ -56,10 +71,7 @@ public class GM : MonoBehaviour
     private void DestroyField()
     {
         foreach (var tile in tiles)
-        {
-            if (tile == null) break;
             Destroy(tile.gameObject);
-        }
         minesCount = 0;
     }
 
@@ -87,11 +99,13 @@ public class GM : MonoBehaviour
 
     private void InstantiateTile(int i, int j)
     {
-        GameObject t = Instantiate(tilePref, new Vector2(i * (scale / y) - 5f, j * (scale / x) - 5f), Quaternion.identity);
+        float scaleX = scale / x;
+        float scaleY = scale / y;
+
+        GameObject t = Instantiate(tilePref, new Vector2(j * scaleY - 4, -i * scaleX + 4), Quaternion.identity);
+        t.gameObject.transform.localScale = new Vector3(scaleY, scaleX, 0);
         tiles[i, j] = t.GetComponent<Tile>();
-        tiles[i, j].gameObject.transform.localScale = new Vector3(scale / y, scale / x, 0);
-        tiles[i, j].x = i;
-        tiles[i, j].y = j;
+        tiles[i, j].pos = new Position(i, j);
     }
 
     private void CreateMines(int i, int j)
@@ -110,7 +124,7 @@ public class GM : MonoBehaviour
     public void SaveNewLevel(TextMeshProUGUI name) 
     {
         string fullPath = path + name.text + ".txt";
-        Debug.Log("saving to \"" + fullPath + "\"...");
+        UnityEngine.Debug.Log("saving to \"" + fullPath + "\"...");
 
         StreamWriter sw = new StreamWriter(fullPath);
 
@@ -127,18 +141,23 @@ public class GM : MonoBehaviour
         sw.Close();
     }
 
-    public bool LoadLevel()
+    public void LoadLevel()
     {
         string lvlName = PlayerPrefs.GetString("level_name", "random");
-        Debug.Log("loaded " + lvlName);
+        UnityEngine.Debug.Log("loaded " + lvlName);
+        tiles = new Tile[x, y];
+
         if (lvlName == "random")
-            return false;
+        {
+            NewLevel();
+            return;
+        }
 
         using (StreamReader sr = new StreamReader(path + lvlName + ".txt"))
         {
             string[] size = sr.ReadLine().Split(';');
-            y = Convert.ToInt32(size[0]);
-            x = Convert.ToInt32(size[1]);
+            x = Convert.ToInt32(size[0]);
+            y = Convert.ToInt32(size[1]);
 
             tiles = new Tile[x, y];
 
@@ -152,10 +171,21 @@ public class GM : MonoBehaviour
                 }
             }
         }
-        return true;
     }
 
     #endregion LevelManagement
+
+    public void SmilieFunc()
+    {
+        foreach (Tile tile in tiles)
+        {
+            if (tile.mineCount == 0)
+            {
+                tile.Reveal(false);
+                break;
+            }
+        }
+    }
 
     private void Update()
     {
@@ -196,52 +226,52 @@ public class GM : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             foreach (var tile in tiles)
-                tile.Reveal();
+                tile.Reveal(false);
         }
         if (Input.GetKeyDown(KeyCode.Keypad0))
         {
             foreach (var tile in tiles)
-                if (tile.type != Type.mine && tile.mineCount == 0) tile.Reveal();
+                if (tile.type != Type.mine && tile.mineCount == 0) tile.Reveal(false);
         }
         if (Input.GetKeyDown(KeyCode.Keypad1))
         {
             foreach (var tile in tiles)
-                if (tile.type != Type.mine && tile.mineCount == 1) tile.Reveal();
+                if (tile.type != Type.mine && tile.mineCount == 1) tile.Reveal(false);
         }
         if (Input.GetKeyDown(KeyCode.Keypad2))
         {
             foreach (var tile in tiles)
-                if (tile.type != Type.mine && tile.mineCount == 2) tile.Reveal();
+                if (tile.type != Type.mine && tile.mineCount == 2) tile.Reveal(false    );
         }
         if (Input.GetKeyDown(KeyCode.Keypad3))
         {
             foreach (var tile in tiles)
-                if (tile.type != Type.mine && tile.mineCount == 3) tile.Reveal();
+                if (tile.type != Type.mine && tile.mineCount == 3) tile.Reveal(false);
         }
         if (Input.GetKeyDown(KeyCode.Keypad4))
         {
             foreach (var tile in tiles)
-                if (tile.type != Type.mine && tile.mineCount == 4) tile.Reveal();
+                if (tile.type != Type.mine && tile.mineCount == 4) tile.Reveal(false);
         }
         if (Input.GetKeyDown(KeyCode.Keypad5))
         {
             foreach (var tile in tiles)
-                if (tile.type != Type.mine && tile.mineCount == 5) tile.Reveal();
+                if (tile.type != Type.mine && tile.mineCount == 5) tile.Reveal(false);
         }
         if (Input.GetKeyDown(KeyCode.Keypad6))
         {
             foreach (var tile in tiles)
-                if (tile.type != Type.mine && tile.mineCount == 6) tile.Reveal();
+                if (tile.type != Type.mine && tile.mineCount == 6) tile.Reveal(false);
         }
         if (Input.GetKeyDown(KeyCode.Keypad7))
         {
             foreach (var tile in tiles)
-                if (tile.type != Type.mine && tile.mineCount == 7) tile.Reveal();
+                if (tile.type != Type.mine && tile.mineCount == 7) tile.Reveal(false);
         }
         if (Input.GetKeyDown(KeyCode.Keypad8))
         {
             foreach (var tile in tiles)
-                if (tile.type != Type.mine && tile.mineCount == 8) tile.Reveal();
+                if (tile.type != Type.mine && tile.mineCount == 8) tile.Reveal(false);
         }
     }
 }

@@ -19,6 +19,19 @@ public class VisualTile : MonoBehaviour
         SetColor(tile);
         SetText(tile);
     }
+    public void Render(bool over)
+    {
+        ColorChange(over ? 0.1f : -0.1f);
+    }
+
+    private void ColorChange(float x)
+    {
+        Color col = gameObject.GetComponent<SpriteRenderer>().color;
+        col.r += x;
+        col.g += x;
+        col.b += x;
+        gameObject.GetComponent<SpriteRenderer>().color = col;
+    }
 
     public void SetColor(Tile tile)
     {
