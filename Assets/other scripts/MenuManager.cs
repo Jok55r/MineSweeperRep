@@ -1,12 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor.SearchService;
-using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.WSA;
-using UnityEngine.UI;
-using TMPro;
 
 public class MenuManager : MonoBehaviour
 {
