@@ -10,6 +10,8 @@ public class Tile : MonoBehaviour
     public State state = State.none;
     public NeighborType neighborType;
     public Type type;
+    public Addon addon;
+    public int addonNum;
     public int mineCount;
 
     public List<Tile> neighbors;
@@ -19,6 +21,9 @@ public class Tile : MonoBehaviour
     public void Start()
     {
         NeighborStrategy.CountNeighbors(this);
+
+        int rndNum = new System.Random().Next(0, neighbors.Count);
+        addonNum = rndNum == mineCount ? 8 : rndNum;
 
         if (GM.lvlMake)
             Reveal(false);
@@ -42,7 +47,7 @@ public class Tile : MonoBehaviour
             GM.lost = counts;
             GM.currentMinesCount--;
         }
-        else
+        else if (state != State.marked)
         {
             if (state == State.marked)
                 GM.currentMinesCount--;
@@ -52,6 +57,7 @@ public class Tile : MonoBehaviour
                 OpenNeighbors();
         }
 
+        GM.revealedCount++;
         visual.Render(this);
     }
 
@@ -120,6 +126,14 @@ public class Position
         this.x = x;
         this.y = y;
     }
+}
+
+public enum Addon
+{
+    none,
+    question,
+    exclamation,
+    moreless,
 }
 
 public enum State

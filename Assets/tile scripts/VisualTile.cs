@@ -1,4 +1,5 @@
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class VisualTile : MonoBehaviour
@@ -69,11 +70,18 @@ public class VisualTile : MonoBehaviour
             return;
         }
 
-        tmp.text = tile.mineCount == 0 ? "" : tile.mineCount.ToString();
-        if (AverageCol() > 0.5f)
-            tmp.color = Color.black;
-        else
-            tmp.color = Color.white;
+
+        tmp.text = tile.addon switch
+        {
+            Addon.question => "?",
+            Addon.exclamation => tile.addonNum + "!",
+            Addon.moreless => tile.addonNum + (tile.addonNum < tile.mineCount ? ">" : "<"),
+            _ => tile.mineCount == 0 ? "" : tile.mineCount.ToString()
+        };
+        if (tile.mineCount == 0)
+            tmp.text = "";
+        
+        tmp.color = AverageCol() > 0.5f ? Color.black : Color.white;
     }
 
     private float AverageCol()

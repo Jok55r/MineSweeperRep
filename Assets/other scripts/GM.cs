@@ -9,14 +9,25 @@ using UnityEngine.UIElements;
 using System.Xml.Linq;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using TMPro.Examples;
+using UnityEngine.UI;
+using TMPro.EditorUtilities;
 
 public class GM : MonoBehaviour
 {
     public TextMeshProUGUI time;
+    public TMP_InputField mineText;
+    public TMP_InputField questionText;
+    public TMP_InputField exclamationText;
+    public TMP_InputField morelessText;
+    public TMP_InputField xText;
+    public TMP_InputField yText;
 
     public GameObject losePanel;
-    public TextMeshPro tmpMines;
+    public GameObject winPanel;
+    public TextMeshProUGUI tmpMines;
     public static int minesCount;
+    public static int revealedCount;
     public static int currentMinesCount;
     public static bool lost = false;
 
@@ -26,6 +37,9 @@ public class GM : MonoBehaviour
     public int mineChance;
     public int y;
     public int x;
+    public int questionChance;
+    public int exclamationChance;
+    public int morelessChance;
 
     public static bool lvlMake;
     private float scale = 9;
@@ -39,8 +53,19 @@ public class GM : MonoBehaviour
         LoadLevel();
     }
 
+    void Start()
+    {
+        mineText.text = mineChance.ToString();
+        questionText.text = questionChance.ToString();
+        exclamationText.text = exclamationChance.ToString();
+        morelessText.text = morelessChance.ToString();
+        xText.text = x.ToString();
+        yText.text = y.ToString();
+    }
+
     public void NewLevel()
     {
+        revealedCount = 0;
         Stopwatch sw1 = Stopwatch.StartNew();
         sw1 = Stopwatch.StartNew();
 
@@ -85,7 +110,7 @@ public class GM : MonoBehaviour
             for (int j = 0; j < y; j++)
             {
                 InstantiateTile(i, j);
-                CreateMines(i, j);
+                AdjustTile(i, j);
 
                 if (sameGridType)
                     tiles[i, j].neighborType = type;
@@ -108,12 +133,24 @@ public class GM : MonoBehaviour
         tiles[i, j].pos = new Position(i, j);
     }
 
-    private void CreateMines(int i, int j)
+    private void AdjustTile(int i, int j)
     {
         if (!lvlMake && UnityEngine.Random.Range(0, 100) < mineChance)
         {
             tiles[i, j].type = Type.mine;
             minesCount++;
+        }
+        else if (UnityEngine.Random.Range(0, 100) < questionChance)
+        {
+            tiles[i, j].addon = Addon.question;
+        }
+        else if (UnityEngine.Random.Range(0, 100) < exclamationChance)
+        {
+            tiles[i, j].addon = Addon.exclamation;
+        }
+        else if (UnityEngine.Random.Range(0, 100) < morelessChance)
+        {
+            tiles[i, j].addon = Addon.moreless;
         }
     }
 
@@ -193,11 +230,15 @@ public class GM : MonoBehaviour
 
         if (lost == true)
         {
-            SetPanel(true);
+            SetLosePanel(true);
             lost = false;
         }
+        if (revealedCount >= x * y - minesCount)
+        {
+            SetWinPanel(true);
+        }
 
-        DebugMethod();
+        //DebugMethod();
     }
 
     public void Creating()
@@ -214,9 +255,24 @@ public class GM : MonoBehaviour
 
     }
 
-    public void SetPanel(bool boolean)
+    public void SetLosePanel(bool boolean)
         => losePanel.SetActive(boolean);
-     
+    public void SetWinPanel(bool boolean)
+        => winPanel.SetActive(boolean);
+
+    public void ChangeMineChance(TMP_InputField tmp)
+        => mineChance = Convert.ToInt32(tmp.text);
+    public void ChangeQuestionChance(TMP_InputField tmp)
+        => questionChance = Convert.ToInt32(tmp.text);
+    public void ChangeExclamationChance(TMP_InputField tmp)
+        => exclamationChance = Convert.ToInt32(tmp.text);
+    public void ChangeMoreLessChance(TMP_InputField tmp)
+        => morelessChance = Convert.ToInt32(tmp.text);
+    public void ChangeX(TMP_InputField tmp)
+        => x = Convert.ToInt32(tmp.text);
+    public void ChangeY(TMP_InputField tmp)
+        => y = Convert.ToInt32(tmp.text);
+    
 
     // !!! WARNING: YOU ARE ENTERING THE ZONE OF GOVNO CODE !!!
 
