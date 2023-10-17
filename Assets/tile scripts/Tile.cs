@@ -23,13 +23,13 @@ public class Tile : MonoBehaviour
         int rndNum = new System.Random().Next(0, neighbors.Count);
         addonNum = rndNum == mineCount ? 8 : rndNum;
 
-        if (GM.lvlMake)
+        if (GM.creatorMode)
             Reveal(false);
     }
 
     private void OnMouseOver()
     {
-        if (GM.lvlMake && Input.GetKeyDown(KeyCode.Mouse0))
+        if (GM.creatorMode && Input.GetKeyDown(KeyCode.Mouse0))
             ChangeTile();
         else if (Input.GetKeyDown(KeyCode.Mouse0))
             Reveal(true);
@@ -47,12 +47,10 @@ public class Tile : MonoBehaviour
         }
         else if (state != State.marked)
         {
-            if (state == State.marked)
-                GM.currentMinesCount--;
-
-            state = State.revealed; 
             if (mineCount == 0)
                 OpenNeighbors();
+
+            state = State.revealed; 
         }
 
         GM.revealedCount++;

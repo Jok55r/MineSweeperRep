@@ -32,12 +32,13 @@ public class GM : MonoBehaviour
     public int exclamationChance;
     public int morelessChance;
 
-    public static bool lvlMake;
+    public static bool creatorMode;
     private float scale = 9;
+    private bool wonGame = false;
 
     public static Tile[,] tiles;
 
-    public static string path = Application.dataPath + @"/Levels/";
+    public static string path = System.IO.Directory.GetCurrentDirectory() + @"/";
 
     void Awake()
     {
@@ -67,7 +68,7 @@ public class GM : MonoBehaviour
         sw2 = Stopwatch.StartNew();
 
         CreateField();
-        if (lvlMake) FieldMaker();
+        if (creatorMode) FieldMaker();
 
         sw2.Stop();
         TimeSpan ts1 = sw1.Elapsed;
@@ -126,7 +127,7 @@ public class GM : MonoBehaviour
 
     private void AdjustTile(int i, int j)
     {
-        if (!lvlMake && UnityEngine.Random.Range(0, 100) < mineChance)
+        if (!creatorMode && UnityEngine.Random.Range(0, 100) < mineChance)
         {
             tiles[i, j].type = Type.mine;
             minesCount++;
@@ -171,6 +172,8 @@ public class GM : MonoBehaviour
 
     public void LoadLevel()
     {
+        wonGame = false;
+
         string lvlName = PlayerPrefs.GetString("level_name", "random");
         UnityEngine.Debug.Log("loaded " + lvlName);
         tiles = new Tile[x, y];
@@ -207,7 +210,7 @@ public class GM : MonoBehaviour
     {
         foreach (Tile tile in tiles)
         {
-            if (tile.mineCount == 0)
+            if (tile.mineCount == 0 && tile.type != Type.mine)
             {
                 tile.Reveal(false);
                 break;
@@ -224,9 +227,10 @@ public class GM : MonoBehaviour
             SetLosePanel(true);
             lost = false;
         }
-        if (revealedCount >= x * y - minesCount)
+        if (!creatorMode && !wonGame && revealedCount >= x * y - minesCount)
         {
             SetWinPanel(true);
+            wonGame = true;
         }
 
         //DebugMethod();
@@ -234,8 +238,8 @@ public class GM : MonoBehaviour
 
     public void Creating()
     {
-        lvlMake = !lvlMake;
-        if (lvlMake)
+        creatorMode = !creatorMode;
+        if (creatorMode)
         {
             foreach (Tile tile in tiles)
             {
