@@ -4598,12 +4598,12 @@ MonoBehaviour:
   tilePref: {fileID: 3685753773885926030, guid: db77e0f15ccdfa64a906de8c659b2eef, type: 3}
   type: 0
   sameGridType: 1
-  mineChance: 20
+  mineChance: 10
   y: 30
   x: 30
-  questionChance: 20
-  exclamationChance: 20
-  morelessChance: 20
+  questionChance: 0
+  exclamationChance: 0
+  morelessChance: 0
 --- !u!1 &1434073631
 GameObject:
   m_ObjectHideFlags: 0

@@ -45,12 +45,14 @@ public class Tile : MonoBehaviour
             GM.lost = counts;
             GM.currentMinesCount--;
         }
-        else if (state != State.marked)
+        else if (state == State.none)
         {
             if (mineCount == 0)
+            {
+                state = State.revealed;
                 OpenNeighbors();
-
-            state = State.revealed; 
+            }
+            state = State.revealed;
         }
 
         GM.revealedCount++;
@@ -96,6 +98,7 @@ public class Tile : MonoBehaviour
     public void ReCount()
     {
         NeighborStrategy.CountNeighbors(this);
+        state = State.revealed;
         visual.Render(this);
     }
 

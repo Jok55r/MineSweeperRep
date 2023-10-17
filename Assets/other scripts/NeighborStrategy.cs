@@ -43,21 +43,6 @@ public class NeighborStrategy : MonoBehaviour
         if (pos.x < x && pos.y > 0) array.Add(new Position(pos.x + 1, pos.y - 1));
         if (pos.x < x && pos.y < y) array.Add(new Position(pos.x + 1, pos.y + 1));
         if (pos.x > 0 && pos.y < y) array.Add(new Position(pos.x - 1, pos.y + 1));
-        /*int k = 0;
-        var a4a = GetA4a(tile);
-        var a4ab = GetA4b(tile);
-
-        foreach (var item in a4a)
-        {
-            array.Add(item);
-            k++;
-        }
-        foreach (var item in a4ab)
-        {
-            array.Add(item);
-            k++;
-        }*/
-
         return array;
     }
 

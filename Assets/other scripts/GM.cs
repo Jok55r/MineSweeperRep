@@ -255,6 +255,8 @@ public class GM : MonoBehaviour
     public void SetWinPanel(bool boolean)
         => winPanel.SetActive(boolean);
 
+    #region UI
+
     public void ChangeMineChance(TMP_InputField tmp)
         => mineChance = Convert.ToInt32(tmp.text);
     public void ChangeQuestionChance(TMP_InputField tmp)
@@ -267,7 +269,8 @@ public class GM : MonoBehaviour
         => x = Convert.ToInt32(tmp.text);
     public void ChangeY(TMP_InputField tmp)
         => y = Convert.ToInt32(tmp.text);
-    
+
+    #endregion UI
 
     // !!! WARNING: YOU ARE ENTERING THE ZONE OF GOVNO CODE !!!
 
