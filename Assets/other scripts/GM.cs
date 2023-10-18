@@ -3,7 +3,6 @@ using TMPro;
 using UnityEngine;
 using System.IO;
 using System.Diagnostics;
-using UnityEditor.PackageManager.UI;
 
 public class GM : MonoBehaviour
 {
@@ -42,6 +41,14 @@ public class GM : MonoBehaviour
     }
 
 
+    public void Preparations()
+    {
+        currentMinesCount = minesCount;
+
+        if (creatorMode) 
+            FieldMaker();
+    }
+
     public void NewLevel()
     {
         UImanager.NewLevel();
@@ -59,7 +66,6 @@ public class GM : MonoBehaviour
         sw2 = Stopwatch.StartNew();
 
         CreateField();
-        if (creatorMode) FieldMaker();
 
         sw2.Stop();
         TimeSpan ts1 = sw1.Elapsed;
@@ -68,13 +74,14 @@ public class GM : MonoBehaviour
                     + "Creation time: " + (ts2*4).ToString("ss\\.fff") + "\n";
     }
 
-    #region Create Field
-
     private void FieldMaker()
     {
         foreach (var tile in tiles) 
             tile.ReCount();
     }
+
+
+    #region Create Field
 
     private void DestroyField()
     {
@@ -102,7 +109,7 @@ public class GM : MonoBehaviour
             }
         }
 
-        currentMinesCount = minesCount;
+        Preparations();
     }
 
     private void InstantiateTile(int i, int j)
@@ -163,6 +170,7 @@ public class GM : MonoBehaviour
 
     public void LoadLevel()
     {
+        minesCount = 0;
         UImanager.ChangeBackgroundCol(UImanager.normalCol);
 
         string lvlName = PlayerPrefs.GetString("level_name", "random");
@@ -190,9 +198,13 @@ public class GM : MonoBehaviour
                 {
                     InstantiateTile(i, j);
                     tiles[i, j].type = line[j] == '1' ? Type.mine : Type.normal;
+
+                    if (line[j] == '1')
+                        minesCount++;
                 }
             }
         }
+        Preparations();
     }
 
     #endregion LevelManagement
@@ -216,7 +228,7 @@ public class GM : MonoBehaviour
             UImanager.SetLosePanel(true);
             lost = false;
         }
-        if (!creatorMode && revealedCount + minesCount == x * y)
+        if (!creatorMode && revealedCount + minesCount - currentMinesCount == x * y)
         {
             won = true;
         }
@@ -236,7 +248,10 @@ public class GM : MonoBehaviour
         {
             foreach (Tile tile in tiles)
             {
-                tile.state = State.revealed;
+                if (tile.type == Type.mine)
+                    tile.state = State.marked;
+                else
+                    tile.state = State.revealed;
                 tile.visual.Render(tile);
             }
         }

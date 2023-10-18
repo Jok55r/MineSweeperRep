@@ -17,6 +17,8 @@ public class UIManager : MonoBehaviour
     public TMP_InputField xText;
     public TMP_InputField yText;
 
+    public GameObject tutorPanel;
+
     public GameObject losePanel;
     public TextMeshProUGUI tmpMines;
 
@@ -49,6 +51,10 @@ public class UIManager : MonoBehaviour
         => losePanel.SetActive(boolean);
     public void ChangeBackgroundCol(Color color)
         => mainCamera.backgroundColor = color;
+
+
+    public void SetTutorPanel(bool set)
+        => tutorPanel.SetActive(set);
 
 
     public void ChangeMineChance(TMP_InputField tmp)

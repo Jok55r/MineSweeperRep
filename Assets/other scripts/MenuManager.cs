@@ -15,7 +15,10 @@ public class MenuManager : MonoBehaviour
     }
 
     public void Menu()
-        => SceneManager.LoadScene("Menu");
+    {
+        GM.creatorMode = false;
+        SceneManager.LoadScene("Menu");
+    }
 
     public void ExitGame()
     {

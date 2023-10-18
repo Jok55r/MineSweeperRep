@@ -97,7 +97,13 @@ public class Tile : MonoBehaviour
     public void ChangeTile()
     {
         type = type == Type.mine ? Type.normal : Type.mine;
-        GM.currentMinesCount += type == Type.mine ? 1 : -1;
+
+        if (type == Type.mine)
+            state = State.marked;
+        else
+            state = State.revealed;
+
+        GM.minesCount += type == Type.mine ? 1 : -1;
 
         foreach (var tile in neighbors)
             tile.ReCount();
@@ -108,7 +114,12 @@ public class Tile : MonoBehaviour
     public void ReCount()
     {
         NeighborStrategy.CountNeighbors(this);
-        state = State.revealed;
+
+        if (type == Type.mine)
+            state = State.marked;
+        else
+            state = State.revealed;
+
         visual.Render(this);
     }
 
