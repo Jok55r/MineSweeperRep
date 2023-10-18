@@ -3,38 +3,34 @@ using TMPro;
 using UnityEngine;
 using System.IO;
 using System.Diagnostics;
+using UnityEditor.PackageManager.UI;
 
 public class GM : MonoBehaviour
 {
+    public UIManager UImanager;
     public TextMeshProUGUI time;
-    public TMP_InputField mineText;
-    public TMP_InputField questionText;
-    public TMP_InputField exclamationText;
-    public TMP_InputField morelessText;
-    public TMP_InputField xText;
-    public TMP_InputField yText;
 
-    public GameObject losePanel;
-    public GameObject winPanel;
-    public TextMeshProUGUI tmpMines;
     public static int minesCount;
     public static int revealedCount;
     public static int currentMinesCount;
+
     public static bool lost = false;
+    public static bool won = false;
 
     public GameObject tilePref;
     public NeighborType type;
     public bool sameGridType;
-    public int mineChance;
-    public int y;
-    public int x;
-    public int questionChance;
-    public int exclamationChance;
-    public int morelessChance;
+    public static int mineChance = 10;
+    public static int y = 10;
+    public static int x = 10;
+    public static int questionChance = 0;
+    public static int exclamationChance = 0;
+    public static int morelessChance = 0;
+
+    public int revealedTiles;
 
     public static bool creatorMode;
     private float scale = 9;
-    private bool wonGame = false;
 
     public static Tile[,] tiles;
 
@@ -45,18 +41,13 @@ public class GM : MonoBehaviour
         LoadLevel();
     }
 
-    void Start()
-    {
-        mineText.text = mineChance.ToString();
-        questionText.text = questionChance.ToString();
-        exclamationText.text = exclamationChance.ToString();
-        morelessText.text = morelessChance.ToString();
-        xText.text = x.ToString();
-        yText.text = y.ToString();
-    }
 
     public void NewLevel()
     {
+        UImanager.NewLevel();
+        lost = false;
+        won = false;
+
         revealedCount = 0;
         Stopwatch sw1 = Stopwatch.StartNew();
         sw1 = Stopwatch.StartNew();
@@ -172,7 +163,7 @@ public class GM : MonoBehaviour
 
     public void LoadLevel()
     {
-        wonGame = false;
+        UImanager.ChangeBackgroundCol(UImanager.normalCol);
 
         string lvlName = PlayerPrefs.GetString("level_name", "random");
         UnityEngine.Debug.Log("loaded " + lvlName);
@@ -220,19 +211,21 @@ public class GM : MonoBehaviour
 
     private void Update()
     {
-        tmpMines.text = $"{currentMinesCount} ({minesCount})";
-
         if (lost == true)
         {
-            SetLosePanel(true);
+            UImanager.SetLosePanel(true);
             lost = false;
         }
-        if (!creatorMode && !wonGame && revealedCount >= x * y - minesCount)
+        if (!creatorMode && revealedCount + minesCount == x * y)
         {
-            SetWinPanel(true);
-            wonGame = true;
+            won = true;
+        }
+        if (creatorMode && !won)
+        {
+            Reveal0();
         }
 
+        revealedTiles = revealedCount;
         //DebugMethod();
     }
 
@@ -250,29 +243,8 @@ public class GM : MonoBehaviour
 
     }
 
-    public void SetLosePanel(bool boolean)
-        => losePanel.SetActive(boolean);
-    public void SetWinPanel(bool boolean)
-        => winPanel.SetActive(boolean);
 
-    #region UI
-
-    public void ChangeMineChance(TMP_InputField tmp)
-        => mineChance = Convert.ToInt32(tmp.text);
-    public void ChangeQuestionChance(TMP_InputField tmp)
-        => questionChance = Convert.ToInt32(tmp.text);
-    public void ChangeExclamationChance(TMP_InputField tmp)
-        => exclamationChance = Convert.ToInt32(tmp.text);
-    public void ChangeMoreLessChance(TMP_InputField tmp)
-        => morelessChance = Convert.ToInt32(tmp.text);
-    public void ChangeX(TMP_InputField tmp)
-        => x = Convert.ToInt32(tmp.text);
-    public void ChangeY(TMP_InputField tmp)
-        => y = Convert.ToInt32(tmp.text);
-
-    #endregion UI
-
-    // !!! WARNING: YOU ARE ENTERING THE ZONE OF GOVNO CODE !!!
+    // !!! WARNING: YOU ARE ENTERING THE ZONE OF GOVNO CODE / DEBUG !!!
 
 
     private void DebugMethod()
@@ -327,5 +299,12 @@ public class GM : MonoBehaviour
             foreach (var tile in tiles)
                 if (tile.type != Type.mine && tile.mineCount == 8) tile.Reveal(false);
         }
+    }
+
+    private void Reveal0()
+    {
+        foreach (var tile in tiles)
+            if (tile.type != Type.mine && tile.mineCount == 0) tile.Reveal(false);
+        UnityEngine.Debug.Log("Opened zeros");
     }
 }

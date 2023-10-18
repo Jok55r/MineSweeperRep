@@ -16,6 +16,8 @@ public class Tile : MonoBehaviour
 
     public Position pos;
 
+    public static bool neighborsUp = false;
+
     public void Start()
     {
         NeighborStrategy.CountNeighbors(this);
@@ -35,6 +37,14 @@ public class Tile : MonoBehaviour
             Reveal(true);
         else if (Input.GetKeyDown(KeyCode.Mouse1))
             Mark();
+
+         // HIGHLIGHT NEIGHBORS IN FUTURE
+        /*if (Input.GetKeyDown(KeyCode.LeftControl) || Input.GetKeyUp(KeyCode.LeftControl))
+        {
+            foreach (var tile in neighbors)
+                tile.visual.Render(neighborsUp);
+            neighborsUp = !neighborsUp;
+        }*/
     }
 
     public void Reveal(bool counts)
@@ -53,9 +63,9 @@ public class Tile : MonoBehaviour
                 OpenNeighbors();
             }
             state = State.revealed;
+            GM.revealedCount++;
         }
 
-        GM.revealedCount++;
         visual.Render(this);
     }
 
@@ -104,16 +114,6 @@ public class Tile : MonoBehaviour
 
     #endregion making level
 
-    private void OnMouseEnter()
-    {
-        foreach (var tile in neighbors)
-            tile.visual.Render(false);
-    }
-    private void OnMouseExit()
-    {
-        foreach (var tile in neighbors)
-            tile.visual.Render(true);
-    }
 }
 public class Position
 {
