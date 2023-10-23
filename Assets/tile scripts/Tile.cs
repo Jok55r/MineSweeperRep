@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -52,7 +53,6 @@ public class Tile : MonoBehaviour
         foreach (var tile in neighbors)
             tile.visual.Render(true);
     }
-
     private void OnMouseExit()
     {
         foreach (var tile in neighbors)
@@ -63,18 +63,17 @@ public class Tile : MonoBehaviour
     {
         if (GameFlow.gameState == GameState.endGame)
             return;
-
         if (GameFlow.gameState == GameState.preGame)
         {
-            GM.AdjustTile(pos);
+            FieldManager.AdjustTile(pos);
             GameFlow.gameState = GameState.inGame;
         }
 
+
         if (type == Type.mine && state != State.marked)
         {
-            state = State.marked;
-            GM.lost = counts;
-            GM.currentMinesCount--;
+            GameFlow.gameState = GameState.endGame;
+            Global.currentMinesCount--;
         }
         else if (state == State.none)
         {
@@ -84,7 +83,7 @@ public class Tile : MonoBehaviour
                 OpenNeighbors();
             }
             state = State.revealed;
-            GM.revealedCount++;
+            Global.revealedCount++;
         }
 
         visual.Render(this);
@@ -95,12 +94,14 @@ public class Tile : MonoBehaviour
         if (state == State.none)
         {
             state = State.marked;
-            GM.currentMinesCount--;
+            Global.currentMinesCount--;
+            Global.revealedCount++;
         }
         else if (state == State.marked)
         {
             state = State.none;
-            GM.currentMinesCount++;
+            Global.currentMinesCount++;
+            Global.revealedCount--;
         }
         visual.Render(this);
     }
@@ -110,27 +111,6 @@ public class Tile : MonoBehaviour
         foreach (var tile in neighbors)
         {
             if (tile.state == State.none) tile.Reveal(false);
-        }
-    }
-
-    public void AdjustTile(ref Tile tile)
-    {
-        if (GameFlow.gameState != GameState.creator && UnityEngine.Random.Range(0, 100) < GM.mineChance)
-        {
-            tile.type = Type.mine;
-            GM.minesCount++;
-        }
-        else if (UnityEngine.Random.Range(0, 100) < GM.questionChance)
-        {
-            tile.addon = Addon.question;
-        }
-        else if (UnityEngine.Random.Range(0, 100) < GM.exclamationChance)
-        {
-            tile.addon = Addon.exclamation;
-        }
-        else if (UnityEngine.Random.Range(0, 100) < GM.morelessChance)
-        {
-            tile.addon = Addon.moreless;
         }
     }
 
@@ -145,7 +125,7 @@ public class Tile : MonoBehaviour
         else
             state = State.revealed;
 
-        GM.minesCount += type == Type.mine ? 1 : -1;
+        Global.minesCount += type == Type.mine ? 1 : -1;
 
         foreach (var tile in neighbors)
             tile.ReCount();

@@ -4,24 +4,36 @@ using UnityEngine.SceneManagement;
 
 public class GameFlow : MonoBehaviour
 {
+    public FieldManager fieldManager;
     public static GameState gameState = GameState.preGame;
+    private static GameState lastState = gameState;
 
     public UIManager uiManager;
     public GM gameManager;
 
-    public void ChangeState(GameState state)
+    public void Update()
     {
-        switch (state)
+        Debug.Log(gameState.ToString());
+
+        if (lastState == gameState)
+            return;
+
+        lastState = gameState;
+
+        switch (gameState)
         {
+            case GameState.preGame:
+                fieldManager.NewLevel();
+                break;
             case GameState.endGame:
-                GM.RevealAllMines();
+                EndGame();
                 break;
         }
     }
 
-    public void EndGame(bool won)
+    public void EndGame()
     {
-        if (won)
+        if (Global.revealedCount == Global.x * Global.y)
         {
             uiManager.ChangeBackgroundCol(Color.green);
         }
@@ -30,7 +42,6 @@ public class GameFlow : MonoBehaviour
             GM.RevealAllMines();
             uiManager.ChangeBackgroundCol(Color.red);
         }
-        gameState = GameState.endGame;
     }
 
     void Start()

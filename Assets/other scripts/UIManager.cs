@@ -23,22 +23,20 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
-        mineText.text = GM.mineChance.ToString();
-        questionText.text = GM.questionChance.ToString();
-        exclamationText.text = GM.exclamationChance.ToString();
-        morelessText.text = GM.morelessChance.ToString();
-        xText.text = GM.x.ToString();
-        yText.text = GM.y.ToString();
+        mineText.text = Global.mineChance.ToString();
+        questionText.text = Global.questionChance.ToString();
+        exclamationText.text = Global.exclamationChance.ToString();
+        morelessText.text = Global.morelessChance.ToString();
+        xText.text = Global.x.ToString();
+        yText.text = Global.y.ToString();
     }
 
     private void Update()
     {
-        tmpMines.text = $"{GM.currentMinesCount} ({GM.minesCount})";
+        tmpMines.text = $"{Global.currentMinesCount} ({Global.minesCount})";
 
-        if (GM.won)
-        {
-            ChangeBackgroundCol(winCol);
-        }
+        if (GameFlow.gameState == GameState.preGame)
+            ChangeBackgroundCol(normalCol);
     }
 
     public void NewLevel()
@@ -55,15 +53,15 @@ public class UIManager : MonoBehaviour
 
 
     public void ChangeMineChance(TMP_InputField tmp)
-        => GM.mineChance = Convert.ToInt32(tmp.text);
+        => Global.mineChance = Convert.ToInt32(tmp.text);
     public void ChangeQuestionChance(TMP_InputField tmp)
-        => GM.questionChance = Convert.ToInt32(tmp.text);
+        => Global.questionChance = Convert.ToInt32(tmp.text);
     public void ChangeExclamationChance(TMP_InputField tmp)
-        => GM.exclamationChance = Convert.ToInt32(tmp.text);
+        => Global.exclamationChance = Convert.ToInt32(tmp.text);
     public void ChangeMoreLessChance(TMP_InputField tmp)
-        => GM.morelessChance = Convert.ToInt32(tmp.text);
+        => Global.morelessChance = Convert.ToInt32(tmp.text);
     public void ChangeX(TMP_InputField tmp)
-        => GM.x = Convert.ToInt32(tmp.text);
+        => Global.x = Convert.ToInt32(tmp.text);
     public void ChangeY(TMP_InputField tmp)
-        => GM.y = Convert.ToInt32(tmp.text);
+        => Global.y = Convert.ToInt32(tmp.text);
 }
