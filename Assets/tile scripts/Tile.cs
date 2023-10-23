@@ -25,20 +25,20 @@ public class Tile : MonoBehaviour
         int rndNum = new System.Random().Next(0, neighbors.Count);
         addonNum = rndNum == mineCount ? 8 : rndNum;
 
-        if (GM.creatorMode)
+        if (GameFlow.gameState == GameState.creator)
             Reveal(false);
     }
 
     private void OnMouseOver()
     {
-        if (GM.creatorMode && Input.GetKeyDown(KeyCode.Mouse0))
+        if (GameFlow.gameState == GameState.creator && Input.GetKeyDown(KeyCode.Mouse0))
             ChangeTile();
         else if (Input.GetKeyDown(KeyCode.Mouse0))
             Reveal(true);
         else if (Input.GetKeyDown(KeyCode.Mouse1))
             Mark();
 
-         // HIGHLIGHT NEIGHBORS IN FUTURE
+        // HIGHLIGHT NEIGHBORS IN FUTURE
         /*if (Input.GetKeyDown(KeyCode.LeftControl) || Input.GetKeyUp(KeyCode.LeftControl))
         {
             foreach (var tile in neighbors)
@@ -47,8 +47,29 @@ public class Tile : MonoBehaviour
         }*/
     }
 
+    private void OnMouseEnter()
+    {
+        foreach (var tile in neighbors)
+            tile.visual.Render(true);
+    }
+
+    private void OnMouseExit()
+    {
+        foreach (var tile in neighbors)
+            tile.visual.Render(false);
+    }
+
     public void Reveal(bool counts)
     {
+        if (GameFlow.gameState == GameState.endGame)
+            return;
+
+        if (GameFlow.gameState == GameState.preGame)
+        {
+            GM.AdjustTile(pos);
+            GameFlow.gameState = GameState.inGame;
+        }
+
         if (type == Type.mine && state != State.marked)
         {
             state = State.marked;
@@ -89,6 +110,27 @@ public class Tile : MonoBehaviour
         foreach (var tile in neighbors)
         {
             if (tile.state == State.none) tile.Reveal(false);
+        }
+    }
+
+    public void AdjustTile(ref Tile tile)
+    {
+        if (GameFlow.gameState != GameState.creator && UnityEngine.Random.Range(0, 100) < GM.mineChance)
+        {
+            tile.type = Type.mine;
+            GM.minesCount++;
+        }
+        else if (UnityEngine.Random.Range(0, 100) < GM.questionChance)
+        {
+            tile.addon = Addon.question;
+        }
+        else if (UnityEngine.Random.Range(0, 100) < GM.exclamationChance)
+        {
+            tile.addon = Addon.exclamation;
+        }
+        else if (UnityEngine.Random.Range(0, 100) < GM.morelessChance)
+        {
+            tile.addon = Addon.moreless;
         }
     }
 
@@ -157,11 +199,4 @@ public enum Type
 {
     normal,
     mine,
-}
-
-public enum NeighborType
-{
-    a8,
-    a4
-    //b6
 }

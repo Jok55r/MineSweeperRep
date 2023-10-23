@@ -19,7 +19,6 @@ public class UIManager : MonoBehaviour
 
     public GameObject tutorPanel;
 
-    public GameObject losePanel;
     public TextMeshProUGUI tmpMines;
 
     void Start()
@@ -47,8 +46,6 @@ public class UIManager : MonoBehaviour
         ChangeBackgroundCol(normalCol);
     }
 
-    public void SetLosePanel(bool boolean)
-        => losePanel.SetActive(boolean);
     public void ChangeBackgroundCol(Color color)
         => mainCamera.backgroundColor = color;
 

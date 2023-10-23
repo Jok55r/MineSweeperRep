@@ -3,11 +3,16 @@ using TMPro;
 using UnityEngine;
 using System.IO;
 using System.Diagnostics;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Unity.VisualScripting;
 
 public class GM : MonoBehaviour
 {
+    public GameFlow gameFlow;
     public UIManager UImanager;
     public TextMeshProUGUI time;
+
+    public GameObject tilePref;
 
     public static int minesCount;
     public static int revealedCount;
@@ -16,7 +21,6 @@ public class GM : MonoBehaviour
     public static bool lost = false;
     public static bool won = false;
 
-    public GameObject tilePref;
     public NeighborType type;
     public bool sameGridType;
     public static int mineChance = 10;
@@ -27,9 +31,7 @@ public class GM : MonoBehaviour
     public static int morelessChance = 0;
 
     public int revealedTiles;
-
-    public static bool creatorMode;
-    private float scale = 9;
+    private const float scale = 9;
 
     public static Tile[,] tiles;
 
@@ -45,12 +47,17 @@ public class GM : MonoBehaviour
     {
         currentMinesCount = minesCount;
 
-        if (creatorMode) 
-            FieldMaker();
+        if (GameFlow.gameState == GameState.creator)
+        {
+            foreach (var tile in tiles)
+                tile.ReCount();
+        }
     }
 
     public void NewLevel()
     {
+        GameFlow.gameState = GameState.preGame;
+
         UImanager.NewLevel();
         lost = false;
         won = false;
@@ -74,13 +81,6 @@ public class GM : MonoBehaviour
                     + "Creation time: " + (ts2*4).ToString("ss\\.fff") + "\n";
     }
 
-    private void FieldMaker()
-    {
-        foreach (var tile in tiles) 
-            tile.ReCount();
-    }
-
-
     #region Create Field
 
     private void DestroyField()
@@ -100,7 +100,6 @@ public class GM : MonoBehaviour
             for (int j = 0; j < y; j++)
             {
                 InstantiateTile(i, j);
-                AdjustTile(i, j);
 
                 if (sameGridType)
                     tiles[i, j].neighborType = type;
@@ -123,25 +122,20 @@ public class GM : MonoBehaviour
         tiles[i, j].pos = new Position(i, j);
     }
 
-    private void AdjustTile(int i, int j)
+    public static void AdjustTile(Position firstTile)
     {
-        if (!creatorMode && UnityEngine.Random.Range(0, 100) < mineChance)
+        for (int i = 0;i < x; i++)
         {
-            tiles[i, j].type = Type.mine;
-            minesCount++;
+            for (int j = 0;j < y; j++)
+            {
+                if (tiles[i, j].pos == firstTile)
+                    tiles[i, j].type = Type.normal;
+                else
+                    tiles[i, j].AdjustTile(ref tiles[i, j]);
+            }
         }
-        else if (UnityEngine.Random.Range(0, 100) < questionChance)
-        {
-            tiles[i, j].addon = Addon.question;
-        }
-        else if (UnityEngine.Random.Range(0, 100) < exclamationChance)
-        {
-            tiles[i, j].addon = Addon.exclamation;
-        }
-        else if (UnityEngine.Random.Range(0, 100) < morelessChance)
-        {
-            tiles[i, j].addon = Addon.moreless;
-        }
+        foreach (var tile in tiles)
+            NeighborStrategy.CountNeighbors(tile);
     }
 
     #endregion Create Field
@@ -225,26 +219,26 @@ public class GM : MonoBehaviour
     {
         if (lost == true)
         {
-            UImanager.SetLosePanel(true);
+            gameFlow.EndGame(false);
             lost = false;
         }
-        if (!creatorMode && revealedCount + minesCount - currentMinesCount == x * y)
+        if (GameFlow.gameState != GameState.creator && revealedCount + minesCount - currentMinesCount == x * y)
         {
+            gameFlow.EndGame(true);
             won = true;
         }
-        if (creatorMode && !won)
+        if (GameFlow.gameState == GameState.creator && !won)
         {
-            Reveal0();
+            RevealAll(0);
         }
 
         revealedTiles = revealedCount;
-        //DebugMethod();
+        DebugMethod();
     }
 
-    public void Creating()
+    public static void StartCreating()
     {
-        creatorMode = !creatorMode;
-        if (creatorMode)
+        if (GameFlow.gameState == GameState.creator)
         {
             foreach (Tile tile in tiles)
             {
@@ -264,7 +258,20 @@ public class GM : MonoBehaviour
 
     private void DebugMethod()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        switch (Input.inputString)
+        {
+            case "0": RevealAll(0); break;
+            case "1": RevealAll(1); break;
+            case "2": RevealAll(2); break;
+            case "3": RevealAll(3); break;
+            case "4": RevealAll(4); break;
+            case "5": RevealAll(5); break;
+            case "6": RevealAll(6); break;
+            case "7": RevealAll(7); break;
+            case "8": RevealAll(8); break;
+            case "9": RevealAll(9); break;
+        }
+        /*if (Input.GetKeyDown(KeyCode.Space))
         {
             foreach (var tile in tiles)
                 tile.Reveal(false);
@@ -313,13 +320,20 @@ public class GM : MonoBehaviour
         {
             foreach (var tile in tiles)
                 if (tile.type != Type.mine && tile.mineCount == 8) tile.Reveal(false);
-        }
+        }*/
     }
 
-    private void Reveal0()
+    private void RevealAll(int num)
     {
         foreach (var tile in tiles)
-            if (tile.type != Type.mine && tile.mineCount == 0) tile.Reveal(false);
-        UnityEngine.Debug.Log("Opened zeros");
+            if (tile.type != Type.mine && tile.mineCount == num) tile.Reveal(false);
+        UnityEngine.Debug.Log($"Opened all {num}");
+    }
+
+    public static void RevealAllMines()
+    {
+        foreach (var tile in tiles)
+            if (tile.type == Type.mine) tile.Reveal(false);
+        UnityEngine.Debug.Log($"Opened all mines");
     }
 }

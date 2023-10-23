@@ -4793,6 +4793,7 @@ GameObject:
   - component: {fileID: 1429225811}
   - component: {fileID: 1429225812}
   - component: {fileID: 1429225813}
+  - component: {fileID: 1429225815}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -4827,6 +4828,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2336f66f443fe544986b5e86e6ffd51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameFlow: {fileID: 1429225815}
   UImanager: {fileID: 1429225813}
   time: {fileID: 570041058}
   tilePref: {fileID: 3685753773885926030, guid: db77e0f15ccdfa64a906de8c659b2eef, type: 3}
@@ -4855,8 +4857,21 @@ MonoBehaviour:
   xText: {fileID: 1137976543}
   yText: {fileID: 2040208193}
   tutorPanel: {fileID: 534164441}
-  losePanel: {fileID: 436140269}
   tmpMines: {fileID: 1809610418}
+--- !u!114 &1429225815
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1429225809}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5481317b489b4cf4aa5362fb628abb66, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uiManager: {fileID: 1429225813}
+  gameManager: {fileID: 1429225812}
 --- !u!1 &1434073631
 GameObject:
   m_ObjectHideFlags: 0
@@ -7684,9 +7699,9 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1429225812}
-        m_TargetAssemblyTypeName: GM, Assembly-CSharp
-        m_MethodName: Creating
+      - m_Target: {fileID: 1429225815}
+        m_TargetAssemblyTypeName: GameFlow, Assembly-CSharp
+        m_MethodName: CreatorChecker
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

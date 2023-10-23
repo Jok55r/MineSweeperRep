@@ -6,7 +6,7 @@ public class MenuManager : MonoBehaviour
     public GameObject panel;
 
     public void PanelToggle()
-        => panel.SetActive(!panel.active);
+        => panel.SetActive(!panel.activeSelf);
 
     public void StartGame()
     {
@@ -16,7 +16,7 @@ public class MenuManager : MonoBehaviour
 
     public void Menu()
     {
-        GM.creatorMode = false;
+        GameFlow.gameState = GameState.menu;
         SceneManager.LoadScene("Menu");
     }
 
