@@ -72,27 +72,30 @@ public class FieldManager : MonoBehaviour
                     tiles[i, j].type = Type.normal;
                     continue;
                 }
-                else
+
+                if (GameFlow.gameState != GameState.creator && UnityEngine.Random.Range(0, 100) < Global.mineChance)
                 {
-                    if (GameFlow.gameState != GameState.creator && UnityEngine.Random.Range(0, 100) < Global.mineChance)
-                    {
-                        tiles[i, j].type = Type.mine;
-                        Global.minesCount++;
-                    }
-
-                    else if (UnityEngine.Random.Range(0, 100) < Global.questionChance)
-                        tiles[i, j].addon = Addon.question;
-
-                    else if (UnityEngine.Random.Range(0, 100) < Global.exclamationChance)
-                        tiles[i, j].addon = Addon.exclamation;
-
-                    else if (UnityEngine.Random.Range(0, 100) < Global.morelessChance)
-                        tiles[i, j].addon = Addon.moreless;
+                    tiles[i, j].type = Type.mine;
+                    Global.minesCount++;
+                    continue;
                 }
+                else if (GameFlow.gameState != GameState.creator && UnityEngine.Random.Range(0, 100) < Global.mineChance)
+                {
+                    tiles[i, j].type = Type.negativeMine;
+                    Global.minesCount++;
+                    continue;
+                }
+
+                else if (UnityEngine.Random.Range(0, 100) < Global.questionChance)
+                    tiles[i, j].addon = Addon.question;
+
+                else if (UnityEngine.Random.Range(0, 100) < Global.exclamationChance)
+                    tiles[i, j].addon = Addon.exclamation;
+
+                else if (UnityEngine.Random.Range(0, 100) < Global.morelessChance)
+                    tiles[i, j].addon = Addon.moreless;
             }
         }
-        foreach (var tile in tiles)
-            NeighborStrategy.CountNeighbors(tile);
         Global.currentMinesCount = Global.minesCount;
     }
 

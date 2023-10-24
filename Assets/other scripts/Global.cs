@@ -3,6 +3,7 @@ using UnityEngine;
 public class Global : MonoBehaviour
 {
     public static int mineChance = 10;
+    public static int negativeMineChance = 15;
     public static int y = 10;
     public static int x = 10;
     public static int questionChance = 0;

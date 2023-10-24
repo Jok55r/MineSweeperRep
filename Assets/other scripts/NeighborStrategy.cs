@@ -12,15 +12,12 @@ public class NeighborStrategy : MonoBehaviour
         x = FieldManager.tiles.GetLength(0) - 1;
         y = FieldManager.tiles.GetLength(1) - 1;
 
-        int sum = 0;
         tile.neighbors = new List<Tile>();
 
         foreach (var pos in GetNeighbors(tile))
         {
-            sum += FieldManager.tiles[pos.x, pos.y].type == Type.mine ? 1 : 0;
             tile.neighbors.Add(FieldManager.tiles[pos.x, pos.y]);
         }
-        tile.mineCount = sum;
     }
 
     public static List<Position> GetNeighbors(Tile tile) => 

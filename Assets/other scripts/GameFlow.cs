@@ -39,7 +39,7 @@ public class GameFlow : MonoBehaviour
         }
         else
         {
-            GM.RevealAllMines();
+            //GM.RevealAllMines();
             uiManager.ChangeBackgroundCol(Color.red);
         }
     }
@@ -58,7 +58,7 @@ public class GameFlow : MonoBehaviour
             gameState = GameState.endGame;
         else
             gameState = GameState.creator;
-        GM.StartCreating();
+        GM.CreatorModeStart();
     }
 }
 

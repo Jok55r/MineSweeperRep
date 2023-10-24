@@ -24,9 +24,10 @@ public class GM : MonoBehaviour
 
     public void SmilieFunc()
     {
+        FieldManager.AdjustTile(FieldManager.tiles[0, 0].pos);
         foreach (Tile tile in FieldManager.tiles)
         {
-            if (tile.mineCount == 0 && tile.type != Type.mine)
+            if (tile.IsZero() && tile.type != Type.mine)
             {
                 tile.Reveal(false);
                 break;
@@ -34,7 +35,7 @@ public class GM : MonoBehaviour
         }
     }
 
-    public static void StartCreating()
+    public static void CreatorModeStart()
     {
         if (GameFlow.gameState == GameState.creator)
         {
@@ -141,9 +142,20 @@ public class GM : MonoBehaviour
 
     private void RevealAll(int num)
     {
+        if (num == 0)
+        {
+            RevealAllZeros();
+            return;
+        }
         foreach (var tile in FieldManager.tiles)
-            if (tile.type != Type.mine && tile.mineCount == num) tile.Reveal(false);
+            if (tile.type != Type.mine && tile.MineCount() == num) tile.Reveal(false);
         UnityEngine.Debug.Log($"Opened all {num}");
+    }
+
+    private void RevealAllZeros()
+    {
+        foreach (var tile in FieldManager.tiles)
+            if (tile.type != Type.mine && tile.IsZero()) tile.Reveal(false);
     }
 
     public static void RevealAllMines()

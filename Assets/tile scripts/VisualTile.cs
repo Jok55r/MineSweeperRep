@@ -23,7 +23,6 @@ public class VisualTile : MonoBehaviour
     {
         ColorChange(over ? 0.1f : -0.1f);
     }
-
     private void ColorChange(float x)
     {
         Color col = gameObject.GetComponent<SpriteRenderer>().color;
@@ -47,11 +46,18 @@ public class VisualTile : MonoBehaviour
         }
         else if (tile.state == State.revealed)
         {
-            if (tile.mineCount == 0)
+            if (tile.IsZero())
                 color = new Color(tileColor.r - colorDarken, tileColor.g - colorDarken, tileColor.b - colorDarken);
             else
                 color = tileColor;
         }
+
+        else if (tile.markNum == 0)
+            color = Color.white;
+        else if (tile.markNum == 1)
+            color = Color.blue;
+
+
         gameObject.GetComponent<SpriteRenderer>().color = color;
     }
 
@@ -74,10 +80,10 @@ public class VisualTile : MonoBehaviour
         {
             Addon.question => "?",
             Addon.exclamation => tile.addonNum + "!",
-            Addon.moreless => tile.addonNum + (tile.addonNum < tile.mineCount ? ">" : "<"),
-            _ => tile.mineCount == 0 ? "" : tile.mineCount.ToString()
+            Addon.moreless => tile.addonNum + (tile.addonNum < tile.MineCount() ? ">" : "<"),
+            _ => tile.IsZero() ? "" : tile.MineCount().ToString()
         };
-        if (tile.mineCount == 0)
+        if (tile.IsZero())
             tmp.text = "";
         
         tmp.color = AverageCol() > 0.5f ? Color.black : Color.white;

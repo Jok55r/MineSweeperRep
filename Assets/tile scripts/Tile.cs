@@ -11,7 +11,6 @@ public class Tile : MonoBehaviour
     public Type type;
     public Addon addon;
     public int addonNum;
-    public int mineCount;
 
     public List<Tile> neighbors;
 
@@ -19,12 +18,35 @@ public class Tile : MonoBehaviour
 
     public static bool neighborsUp = false;
 
+    public int markNum = 0;
+
+    public int MineCount()
+    {
+        int count = 0;
+        foreach (var neighbor in neighbors)
+        {
+            if (neighbor.type == Type.mine)
+                count++;
+            if (neighbor.type == Type.negativeMine)
+                count--;
+        }
+        return count;
+    }
+
+    public bool IsZero()
+    {
+        foreach (var neighbor in neighbors)
+        {
+            if (neighbor.type == Type.mine || neighbor.type == Type.negativeMine)
+                return false;
+        }
+        return true;
+    }
+
     public void Start()
     {
-        NeighborStrategy.CountNeighbors(this);
-
         int rndNum = new System.Random().Next(0, neighbors.Count);
-        addonNum = rndNum == mineCount ? 8 : rndNum;
+        addonNum = rndNum == MineCount() ? 8 : rndNum;
 
         if (GameFlow.gameState == GameState.creator)
             Reveal(false);
@@ -66,18 +88,22 @@ public class Tile : MonoBehaviour
         if (GameFlow.gameState == GameState.preGame)
         {
             FieldManager.AdjustTile(pos);
+
+            foreach (var tile in FieldManager.tiles)
+                NeighborStrategy.CountNeighbors(tile);
+
             GameFlow.gameState = GameState.inGame;
         }
 
 
-        if (type == Type.mine && state != State.marked)
+        if (type != Type.normal && state != State.marked )
         {
             GameFlow.gameState = GameState.endGame;
             Global.currentMinesCount--;
         }
         else if (state == State.none)
         {
-            if (mineCount == 0)
+            if (IsZero())
             {
                 state = State.revealed;
                 OpenNeighbors();
@@ -99,9 +125,17 @@ public class Tile : MonoBehaviour
         }
         else if (state == State.marked)
         {
-            state = State.none;
-            Global.currentMinesCount++;
-            Global.revealedCount--;
+            if (markNum == 0)
+            {
+                markNum = 1;
+            }
+            else
+            {
+                markNum = 0;
+                state = State.none;
+                Global.currentMinesCount++;
+                Global.revealedCount--;
+            }
         }
         visual.Render(this);
     }
@@ -135,8 +169,6 @@ public class Tile : MonoBehaviour
 
     public void ReCount()
     {
-        NeighborStrategy.CountNeighbors(this);
-
         if (type == Type.mine)
             state = State.marked;
         else
@@ -179,4 +211,5 @@ public enum Type
 {
     normal,
     mine,
+    negativeMine,
 }
