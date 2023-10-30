@@ -1,17 +1,15 @@
 using System;
 using TMPro;
 using UnityEngine;
-using Unity;
-using UnityEditor;
-using Unity.VisualScripting;
 using System.IO;
-using UnityEngine.UIElements;
-using System.Xml.Linq;
-using System.Threading.Tasks;
 using System.Diagnostics;
+using JetBrains.Annotations;
+using Assets;
 
 public class GM : MonoBehaviour
 {
+    public static GameState gameState;
+
     public TextMeshProUGUI time;
 
     public GameObject losePanel;
@@ -36,28 +34,23 @@ public class GM : MonoBehaviour
 
     void Awake()
     {
+        CreateField();
+
+        GamePreferences.x = x;
+        GamePreferences.y = y;
+        GamePreferences.mineChance = mineChance;
+        GamePreferences.type = type;
+        GamePreferences.sameGridType = sameGridType;
+
+        gameState = GameState.preGame;
         LoadLevel();
     }
 
     public void NewLevel()
     {
-        Stopwatch sw1 = Stopwatch.StartNew();
-        sw1 = Stopwatch.StartNew();
-
-        if (tiles[0, 0] != null) DestroyField();
-
-        sw1.Stop();
-        Stopwatch sw2 = Stopwatch.StartNew();
-        sw2 = Stopwatch.StartNew();
-
-        CreateField();
+        foreach (var tile in tiles)
+            tile.Reset();
         if (lvlMake) FieldMaker();
-
-        sw2.Stop();
-        TimeSpan ts1 = sw1.Elapsed;
-        TimeSpan ts2 = sw2.Elapsed;
-        time.text = "Destruction time: " + (ts1*4).ToString("ss\\.fff") + "\n"
-                    + "Creation time: " + (ts2*4).ToString("ss\\.fff") + "\n";
     }
 
     #region Create Field
@@ -66,13 +59,6 @@ public class GM : MonoBehaviour
     {
         foreach (var tile in tiles) 
             tile.ReCount();
-    }
-
-    private void DestroyField()
-    {
-        foreach (var tile in tiles)
-            Destroy(tile.gameObject);
-        minesCount = 0;
     }
 
     private void CreateField()
@@ -274,4 +260,12 @@ public class GM : MonoBehaviour
                 if (tile.type != Type.mine && tile.mineCount == 8) tile.Reveal(false);
         }
     }
+}
+
+public enum GameState
+{
+    preGame,
+    inGame,
+    endGame,
+    creator
 }

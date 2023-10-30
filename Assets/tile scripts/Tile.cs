@@ -34,6 +34,8 @@ public class Tile : MonoBehaviour
             Mark();
     }
 
+    
+    
     public void Reveal(bool counts)
     {
         if (type == Type.mine && state != State.marked)
@@ -52,6 +54,13 @@ public class Tile : MonoBehaviour
                 OpenNeighbors();
         }
 
+        visual.Render(this);
+    }
+
+    public void Reset()
+    {
+        type = Type.normal;
+        state = State.none;
         visual.Render(this);
     }
 
