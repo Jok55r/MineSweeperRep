@@ -125,7 +125,13 @@ public class Tile : MonoBehaviour
         }
         else if (state == State.marked)
         {
-            if (markNum == 0)
+            if (!Global.negativeInclude)
+            {
+                state = State.none;
+                Global.currentMinesCount++;
+                Global.revealedCount--;
+            }
+            else if (markNum == 0)
             {
                 markNum = 1;
             }
@@ -146,6 +152,13 @@ public class Tile : MonoBehaviour
         {
             if (tile.state == State.none) tile.Reveal(false);
         }
+    }
+
+    public void Restore()
+    {
+        type = Type.normal;
+        state = State.none;
+        visual.Render(this);
     }
 
     #region making level

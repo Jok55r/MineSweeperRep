@@ -3560,9 +3560,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1429225812}
-        m_TargetAssemblyTypeName: GM, Assembly-CSharp
-        m_MethodName: StartNewLevel
+      - m_Target: {fileID: 1429225816}
+        m_TargetAssemblyTypeName: FieldManager, Assembly-CSharp
+        m_MethodName: NewLevel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

@@ -13,17 +13,18 @@ public class GameFlow : MonoBehaviour
 
     public void Update()
     {
-        Debug.Log(gameState.ToString());
-
         if (lastState == gameState)
             return;
-
         lastState = gameState;
+
+
+        Debug.Log(gameState.ToString());
+
 
         switch (gameState)
         {
             case GameState.preGame:
-                fieldManager.NewLevel();
+                fieldManager.LoadLevel();
                 break;
             case GameState.endGame:
                 EndGame();

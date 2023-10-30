@@ -11,41 +11,44 @@ public class FieldManager : MonoBehaviour
     public GameObject tilePref;
 
 
-    public void NewLevel()
+    public void Awake()
     {
-        GameFlow.gameState = GameState.preGame;
-
-        Global.revealedCount = 0;
-
-        if (tiles[0, 0] != null) DestroyField();
-
         CreateField();
     }
 
-    public void DestroyField()
+
+    public void NewLevel()
+    {
+        if (GameFlow.gameState != GameState.creator)
+            GameFlow.gameState = GameState.preGame;
+
+        Global.revealedCount = 0;
+
+        foreach (Tile tile in tiles)
+            tile.Restore();
+    }
+
+    /*public void DestroyField()
     {
         foreach (var tile in tiles)
             Destroy(tile.gameObject);
         Global.minesCount = 0;
-    }
+    }*/
 
     public void CreateField()
     {
         tiles = new Tile[Global.x, Global.y];
         Array values = Enum.GetValues(typeof(NeighborType));
 
-        for (int i = 0; i < Global.x; i++)
+        Loop((int i, int j) =>
         {
-            for (int j = 0; j < Global.y; j++)
-            {
-                InstantiateTile(i, j);
+            InstantiateTile(i, j);
 
-                if (global.sameGridType)
-                    tiles[i, j].neighborType = global.type;
-                else
-                    tiles[i, j].neighborType = (NeighborType)values.GetValue(new System.Random().Next(values.Length));
-            }
-        }
+            if (global.sameGridType)
+                tiles[i, j].neighborType = global.type;
+            else
+                tiles[i, j].neighborType = (NeighborType)values.GetValue(new System.Random().Next(values.Length));
+        });
 
         Preparations();
     }
@@ -61,41 +64,34 @@ public class FieldManager : MonoBehaviour
         tiles[i, j].pos = new Position(i, j);
     }
 
-    public static void AdjustTile(Position firstTile) //clear this method
+    public static void AdjustTile(Position firstTile)
     {
-        for (int i = 0; i < Global.x; i++)
-        {
-            for (int j = 0; j < Global.y; j++)
+        Loop((int i, int j) => {
+            if (tiles[i, j].pos == firstTile)
             {
-                if (tiles[i, j].pos == firstTile)
-                {
-                    tiles[i, j].type = Type.normal;
-                    continue;
-                }
-
-                if (GameFlow.gameState != GameState.creator && UnityEngine.Random.Range(0, 100) < Global.mineChance)
-                {
-                    tiles[i, j].type = Type.mine;
-                    Global.minesCount++;
-                    continue;
-                }
-                else if (GameFlow.gameState != GameState.creator && UnityEngine.Random.Range(0, 100) < Global.mineChance)
-                {
-                    tiles[i, j].type = Type.negativeMine;
-                    Global.minesCount++;
-                    continue;
-                }
-
-                else if (UnityEngine.Random.Range(0, 100) < Global.questionChance)
-                    tiles[i, j].addon = Addon.question;
-
-                else if (UnityEngine.Random.Range(0, 100) < Global.exclamationChance)
-                    tiles[i, j].addon = Addon.exclamation;
-
-                else if (UnityEngine.Random.Range(0, 100) < Global.morelessChance)
-                    tiles[i, j].addon = Addon.moreless;
+                tiles[i, j].type = Type.normal;
             }
-        }
+
+            else if (GameFlow.gameState != GameState.creator && UnityEngine.Random.Range(0, 100) < Global.mineChance)
+            {
+                tiles[i, j].type = Type.mine;
+                Global.minesCount++;
+            }
+            else if (Global.negativeInclude && GameFlow.gameState != GameState.creator && UnityEngine.Random.Range(0, 100) < Global.mineChance)
+            {
+                tiles[i, j].type = Type.negativeMine;
+                Global.minesCount++;
+            }
+
+            else if (UnityEngine.Random.Range(0, 100) < Global.questionChance)
+                tiles[i, j].addon = Addon.question;
+
+            else if (UnityEngine.Random.Range(0, 100) < Global.exclamationChance)
+                tiles[i, j].addon = Addon.exclamation;
+
+            else if (UnityEngine.Random.Range(0, 100) < Global.morelessChance)
+                tiles[i, j].addon = Addon.moreless;
+        });
         Global.currentMinesCount = Global.minesCount;
     }
 
@@ -121,6 +117,9 @@ public class FieldManager : MonoBehaviour
 
     public void LoadLevel()
     {
+        if (GameFlow.gameState != GameState.creator)
+            GameFlow.gameState = GameState.preGame;
+
         Global.minesCount = 0;
 
         string lvlName = PlayerPrefs.GetString("level_name", "random");
@@ -134,7 +133,7 @@ public class FieldManager : MonoBehaviour
         }
 
 
-        using (StreamReader sr = new StreamReader(GM.path + lvlName + ".tGlobal.xt"))
+        using (StreamReader sr = new StreamReader(GM.path + lvlName + ".txt"))
         {
             string[] size = sr.ReadLine().Split(';');
             Global.x = Convert.ToInt32(size[0]);
@@ -147,7 +146,7 @@ public class FieldManager : MonoBehaviour
                 string line = sr.ReadLine();
                 for (int j = 0; j < Global.x; j++)
                 {
-                    InstantiateTile(i, j);
+                    //InstantiateTile(i, j);
                     tiles[i, j].type = line[j] == '1' ? Type.mine : Type.normal;
 
                     if (line[j] == '1')
@@ -166,6 +165,18 @@ public class FieldManager : MonoBehaviour
         {
             foreach (var tile in tiles)
                 tile.ReCount();
+        }
+    }
+
+
+    public static void Loop(Action<int, int> action)
+    {
+        for (int y = 0; y < tiles.GetLength(1); y++)
+        {
+            for (int x = 0; x < tiles.GetLength(1); x++)
+            {
+                action(x, y);
+            }
         }
     }
 }

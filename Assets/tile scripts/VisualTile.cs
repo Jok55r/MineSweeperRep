@@ -40,10 +40,6 @@ public class VisualTile : MonoBehaviour
             SetBasicColor();
             return;
         }
-        else if (tile.type == Type.mine)
-        {
-            color = Color.white;
-        }
         else if (tile.state == State.revealed)
         {
             if (tile.IsZero())

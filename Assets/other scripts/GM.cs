@@ -17,11 +17,6 @@ public class GM : MonoBehaviour
     public static string path = System.IO.Directory.GetCurrentDirectory() + @"/";
 
 
-    void Awake()
-    {
-        fieldManager.LoadLevel();
-    }
-
     public void SmilieFunc()
     {
         FieldManager.AdjustTile(FieldManager.tiles[0, 0].pos);
