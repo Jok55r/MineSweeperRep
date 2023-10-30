@@ -37,7 +37,7 @@ public class VisualTile : MonoBehaviour
         Color color = Color.white;
         if (tile.state == State.none)
         {
-            SetBasicColor();
+            SetBasicColor(tile);
             return;
         }
         else if (tile.state == State.revealed)
@@ -57,9 +57,14 @@ public class VisualTile : MonoBehaviour
         gameObject.GetComponent<SpriteRenderer>().color = color;
     }
 
+    public void SetBasicColor(Tile tile)
+    {
+        //float rnd = Random.Range(0.1f - colorRND, 0.1f + colorRND);
+        gameObject.GetComponent<SpriteRenderer>().color = tile.color;
+    }
     public void SetBasicColor()
     {
-        float rnd = Random.Range(0.5f - colorRND, 0.5f + colorRND);
+        float rnd = Random.Range(0.1f - colorRND, 0.1f + colorRND);
         gameObject.GetComponent<SpriteRenderer>().color = new Color(rnd, rnd, rnd);
     }
 

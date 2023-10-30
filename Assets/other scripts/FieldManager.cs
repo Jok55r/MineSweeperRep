@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class FieldManager : MonoBehaviour
 {
@@ -9,7 +11,7 @@ public class FieldManager : MonoBehaviour
     public static Tile[,] tiles;
     private const float scale = 9;
     public GameObject tilePref;
-
+    public static List<Color> colors = new List<Color>();
 
     public void Awake()
     {
@@ -23,6 +25,9 @@ public class FieldManager : MonoBehaviour
             GameFlow.gameState = GameState.preGame;
 
         Global.revealedCount = 0;
+
+        for (int i = 0; i < Global.colors; i++)
+            colors.Add(UnityEngine.Random.ColorHSV());
 
         foreach (Tile tile in tiles)
             tile.Restore();
@@ -67,7 +72,11 @@ public class FieldManager : MonoBehaviour
     public static void AdjustTile(Position firstTile)
     {
         Loop((int i, int j) => {
-            if (tiles[i, j].pos == firstTile)
+
+            for (int k = 0; k < Global.colors; k++)
+                tiles[i, j].color = UnityEngine.Random.Range(0, colors.Count) == 0 ? colors[k] : Color.white;
+
+            if (Position.Same(tiles[i, j].pos, firstTile))
             {
                 tiles[i, j].type = Type.normal;
             }
@@ -91,6 +100,8 @@ public class FieldManager : MonoBehaviour
 
             else if (UnityEngine.Random.Range(0, 100) < Global.morelessChance)
                 tiles[i, j].addon = Addon.moreless;
+
+            tiles[i, j].visual.Render(tiles[i, j]);
         });
         Global.currentMinesCount = Global.minesCount;
     }
@@ -124,7 +135,6 @@ public class FieldManager : MonoBehaviour
 
         string lvlName = PlayerPrefs.GetString("level_name", "random");
         UnityEngine.Debug.Log("loaded " + lvlName);
-        tiles = new Tile[Global.x, Global.y];
 
         if (lvlName == "random")
         {
@@ -132,6 +142,7 @@ public class FieldManager : MonoBehaviour
             return;
         }
 
+        Debug.Log("loading");
 
         using (StreamReader sr = new StreamReader(GM.path + lvlName + ".txt"))
         {

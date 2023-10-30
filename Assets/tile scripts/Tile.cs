@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using System.Collections.Generic;
+using UnityEditor.Build;
 using UnityEngine;
 
 public class Tile : MonoBehaviour
@@ -11,6 +12,7 @@ public class Tile : MonoBehaviour
     public Type type;
     public Addon addon;
     public int addonNum;
+    public Color color;
 
     public List<Tile> neighbors;
 
@@ -158,6 +160,8 @@ public class Tile : MonoBehaviour
     {
         type = Type.normal;
         state = State.none;
+        addon = Addon.none;
+        color = Color.white;
         visual.Render(this);
     }
 
@@ -203,6 +207,9 @@ public class Position
         this.x = x;
         this.y = y;
     }
+
+    public static bool Same(Position pos1, Position pos2)
+        => pos1.x == pos2.x && pos1.y == pos2.y;
 }
 
 public enum Addon

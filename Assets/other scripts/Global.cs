@@ -10,6 +10,7 @@ public class Global : MonoBehaviour
     public static int exclamationChance = 0;
     public static int morelessChance = 0;
     public static bool negativeInclude = false;
+    public static int colors = 1;
 
     public static int minesCount;
     public static int revealedCount;

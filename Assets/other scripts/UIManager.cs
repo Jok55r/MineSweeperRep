@@ -23,12 +23,12 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
-        mineText.text = Global.mineChance.ToString();
+        /*mineText.text = Global.mineChance.ToString();
         questionText.text = Global.questionChance.ToString();
         exclamationText.text = Global.exclamationChance.ToString();
         morelessText.text = Global.morelessChance.ToString();
         xText.text = Global.x.ToString();
-        yText.text = Global.y.ToString();
+        yText.text = Global.y.ToString();*/
     }
 
     private void Update()

@@ -8,6 +8,16 @@ using Unity.VisualScripting;
 
 public class GM : MonoBehaviour
 {
+    public  int mineChance = 10;
+    public  int negativeMineChance = 15;
+    public  int y = 10;
+    public  int x = 10;
+    public  int questionChance = 0;
+    public  int exclamationChance = 0;
+    public  int morelessChance = 0;
+    public  bool negativeInclude = false;
+
+
     public FieldManager fieldManager;
     public GameFlow gameFlow;
     public UIManager UImanager;
@@ -16,6 +26,18 @@ public class GM : MonoBehaviour
 
     public static string path = System.IO.Directory.GetCurrentDirectory() + @"/";
 
+
+    public void Awake()
+    {
+        Global.y = y;
+        Global.x = x;
+        Global.mineChance = mineChance;
+        Global.negativeMineChance = negativeMineChance;
+        Global.questionChance = questionChance;
+        Global.exclamationChance=exclamationChance;
+        Global.morelessChance = morelessChance;
+        Global.negativeInclude = negativeInclude;
+    }
 
     public void SmilieFunc()
     {
@@ -48,7 +70,7 @@ public class GM : MonoBehaviour
 
     private void Update()
     {
-        if (Global.revealedCount == Global.x * Global.y)
+        if (revealedtiles == Global.x * Global.y)
         {
             GameFlow.gameState = GameState.endGame;
         }
